@@ -1,10 +1,11 @@
 {
-  "name": "puff",
+  "name": "@foodx/puff",
   "version": "0.0.3",
   "author": "jef king",
+  "description": "convert json files to bigger json files.",
   "scripts": {
     "render": "yaml2json function.tip.yml > function.tip.json",
-    "puff": "node ./puff.js"
+    "puff": "node ./index.js"
   },
   "dependencies": {
     "yamljs": "^0.3.0"
