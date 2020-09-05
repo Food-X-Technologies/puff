@@ -18,5 +18,8 @@
   "puff": "./index.js",
   "scripts": {
     "puff": "node ./index.js"
+  },
+  "dependencies": {
+    "yamljs": "^0.3.0"
   }
 }
