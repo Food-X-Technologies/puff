@@ -6,6 +6,10 @@
     "email": "jef@foodx.io",
     "url": "https://foodx.io"
   },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/Food-X-Technologies/puff.git"
+  },
   "description": "Convert json files to bigger json files.",
   "homepage": "https://github.com/Food-X-Technologies/puff/blob/main/README.md",
   "url": "https://github.com/Food-X-Technologies/puff/issues",
