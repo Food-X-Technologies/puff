@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const template = require('./template.json');
-const toPuff = require('./function.tip.json');
 
 exports.puff = async function load(fileName)
 {

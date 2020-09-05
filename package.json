@@ -1,19 +1,21 @@
 {
   "name": "@foodx/puff",
-  "version": "0.0.6",
+  "version": "0.0.9",
   "author": {
     "name": "Jef King",
     "email": "jef@foodx.io",
     "url": "https://foodx.io"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/Food-X-Technologies/puff.git"
+    "type": "git",
+    "url": "https://github.com/Food-X-Technologies/puff.git"
   },
   "description": "Convert json files to bigger json files.",
   "homepage": "https://github.com/Food-X-Technologies/puff/blob/main/README.md",
   "url": "https://github.com/Food-X-Technologies/puff/issues",
-  "main" : "index.js",
+  "main": "index.js",
+  "bin": "./index.js",
+  "puff": "./index.js",
   "scripts": {
     "puff": "node ./index.js"
   }
