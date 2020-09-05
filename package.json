@@ -1,11 +1,11 @@
 {
-  "name": "transpile-yml-json",
-  "version": "0.0.2",
+  "name": "puff",
+  "version": "0.0.3",
+  "author": "jef king",
   "scripts": {
     "render": "yaml2json function.tip.yml > function.tip.json",
     "puff": "node ./puff.js"
   },
-  "dev": "npm run render & npm run flatten",
   "dependencies": {
     "yamljs": "^0.3.0"
   }
