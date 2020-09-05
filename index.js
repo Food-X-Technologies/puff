@@ -4,7 +4,13 @@ const fs = require('fs');
 const template = require('./template.json');
 const toPuff = require('./function.tip.json');
 
-exports.puff = async function process(data) {
+exports.puff = async function load(fileName)
+{
+    const toPuff = require('fileName');
+    process(toPuff);
+}
+
+async function process(data) {
     const defaultLayer = layer(data.default);
 
     Object.keys(data.environments).forEach(env => {
@@ -27,11 +33,7 @@ exports.puff = async function process(data) {
                     flag: 'w+',
                     encoding: "utf8"
                 }
-                , write(err, data) {
-                    if (err) {
-                        console.log(err);
-                    }
-                }
+                , write
             );
         });
     });
@@ -52,7 +54,6 @@ function MapToObject(m) {
 
     return selfIterator(m);
 }
-
 function layer(data) {
     const map = new Map();
 
@@ -67,4 +68,10 @@ function layer(data) {
 
 function merge(a, b) {
     return new Map(function* () { yield* a; yield* b; }());
+}
+
+async function write(err, data) {
+    if (err) {
+        console.log(err);
+    }
 }
