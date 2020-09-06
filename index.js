@@ -6,9 +6,9 @@ const argv = require('yargs')
             .option('template', {alias: 't'})
             .argv;
 
-const yml = argv.yaml ? argv.yaml : './example.yml';
+const yml = argv.yaml ? argv.yaml : './.test/example.yml';
 console.log('processing', yml);
-const template = argv.template ? argv.template : './template.json';
+const template = argv.template ? argv.template : './.test/template.json';
 console.log('template', template);
 
 const t = require(template);
