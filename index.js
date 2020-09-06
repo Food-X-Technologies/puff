@@ -2,13 +2,13 @@
 const fs = require('fs');
 const yamljs = require('yamljs');
 const argv = require('yargs')
-            .option('yaml', {alias: 'y'})
-            .option('template', {alias: 't'})
+            .option('yaml', {alias: 'y', default: './.test/example.yml'})
+            .option('template', {alias: 't', default: './.test/example.json'})
             .argv;
 
-const yml = argv.yaml ? argv.yaml : './.test/example.yml';
+const yml = argv.yaml;
 console.log('processing', yml);
-const template = argv.template ? argv.template : './.test/template.json';
+const template = argv.template;
 console.log('template', template);
 
 const t = require(template);
