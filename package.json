@@ -17,7 +17,7 @@
   "bin": "./index.js",
   "puff": "./index.js",
   "scripts": {
-    "puff": "node ./index.js -y happy.yml -t ./template.json"
+    "puff": "node ./index.js"
   },
   "dependencies": {
     "yamljs": "^0.3.0",

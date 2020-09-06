@@ -1,0 +1,15 @@
+name: example
+default:
+    key1: value1default
+    key2: value2default
+environments:
+  one:
+    key3: value2one
+    regions:
+    - abc:
+        key1: value1abc
+  two:
+    key4: value4two
+    regions:
+    - xyz:
+        key1: value1xyz
