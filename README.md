@@ -5,6 +5,7 @@ Convert json files to bigger json files.
 yaml/y: yaml file to convert
 template/t: template to convert into.
 
+## Node
 ```
 node ./index.js -y happy.yml -t ./template.json
 ```
