@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-const { fs } = require('fs');
+const fs = require('fs');
+const yamljs = require('yamljs');
 const argv = require('yargs')
             .option('yaml', {alias: 'y'})
             .option('template', {alias: 't'})
@@ -14,16 +15,11 @@ const template = argv.template ? argv.template : './template.json';
 console.log('template', template);
 
 const t = require(template);
-const toConvert = require(yml);
-const toPuff = convert(toConvert);
-puff(toPuff);
+const d = yamljs.load(yml);
+puff(t, d);
 
-async function convert(yml)
-{
-    return {};
-}
-
-async function puff(data) {
+async function puff(template, data) {
+    console.log(data);
     const defaultLayer = layer(data.default);
 
     Object.keys(data.environments).forEach(env => {
