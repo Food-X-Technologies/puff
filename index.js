@@ -16,7 +16,6 @@ const d = yamljs.load(yml);
 puff(t, d);
 
 async function puff(template, data) {
-    console.log(data);
     const defaultLayer = layer(data.default);
 
     Object.keys(data.environments).forEach(env => {
@@ -30,7 +29,6 @@ async function puff(template, data) {
             const region = Object.keys(r)[0];
 
             const fileName = './' + data.name + '.' + env + '.' + region + '.json';
-
             console.log('creating:', fileName);
 
             fs.writeFile(fileName
