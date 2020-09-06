@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const glob = require('glob');
+const path = require('path');
 const yamljs = require('yamljs');
 const argv = require('yargs')
     .option('path', { alias: 'p', default: __dirname })
-    .option('template', { alias: 't', default: './.test/example.json' })
+    .option('template', { alias: 't', default: '.test/example.json' })
     .argv;
-
-const template = argv.template;
-console.log('template', template);
-const t = require(template);
 
 const rootDir = argv.p;
 console.log('root dir', rootDir);
+
+const template = path.join(rootDir, argv.template);
+console.log('template', template);
+const t = require(template);
 
 glob(rootDir + '/**/*.yml', {}, (err, files) => {
     for (var i = 0; i < files.length; i++) {

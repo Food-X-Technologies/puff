@@ -1,6 +1,6 @@
 {
   "name": "@foodx/puff",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "Jef King",
     "email": "jef@foodx.io",
@@ -22,6 +22,7 @@
   "dependencies": {
     "yamljs": "^0.3.0",
     "glob": "^7.1.6",
+    "path": "^0.12.7",
     "yargs": "^15.4.1"
   }
 }
