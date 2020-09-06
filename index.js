@@ -1,19 +1,30 @@
 #!/usr/bin/env node
 const fs = require('fs');
+const glob = require('glob');
 const yamljs = require('yamljs');
 const argv = require('yargs')
-            .option('yaml', {alias: 'y', default: './.test/example.yml'})
-            .option('template', {alias: 't', default: './.test/example.json'})
-            .argv;
+    .option('path', { alias: 'p', default: __dirname })
+    .option('template', { alias: 't', default: './.test/example.json' })
+    .argv;
 
-const yml = argv.yaml;
-console.log('processing', yml);
 const template = argv.template;
 console.log('template', template);
-
 const t = require(template);
-const d = yamljs.load(yml);
-puff(t, d);
+
+const rootDir = argv.p;
+console.log('root dir', rootDir);
+
+glob(rootDir + '/**/*.yml', {}, (err, files) => {
+    for (var i = 0; i < files.length; i++) {
+        const yml = files[i];
+        if (!yml.includes('node_modules')) {
+            console.log('processing', yml);
+
+            const d = yamljs.load(yml);
+            puff(t, d);
+        }
+    }
+});
 
 async function puff(template, data) {
     const defaultLayer = layer(data.default);

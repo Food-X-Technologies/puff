@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "yamljs": "^0.3.0",
+    "glob": "^7.1.6",
     "yargs": "^15.4.1"
   }
 }

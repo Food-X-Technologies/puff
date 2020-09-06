@@ -7,5 +7,12 @@ template/t: template to convert into.
 
 ## Node
 ```
-node ./index.js -y happy.yml -t ./template.json
+node ./index.js -d . -t ./template.json
+```
+
+## NPM
+```
+  "scripts": {
+    "puff": "puff ./functions/linux/tip/function.tip.yml"
+}
 ```
