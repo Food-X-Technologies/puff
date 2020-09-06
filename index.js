@@ -1,15 +1,29 @@
-'use strict'
+#!/usr/bin/env node
+const { fs } = require('fs');
+const argv = require('yargs')
+            .option('yaml', {alias: 'y'})
+            .option('template', {alias: 't'})
+            .argv;
 
-const fs = require('fs');
-const template = require('./template.json');
 
-exports.puff = async function load(fileName)
+
+
+const yml = argv.yaml
+console.log('processing', yml);
+const template = argv.template ? argv.template : './template.json';
+console.log('template', template);
+
+const t = require(template);
+const toConvert = require(yml);
+const toPuff = convert(toConvert);
+puff(toPuff);
+
+async function convert(yml)
 {
-    const toPuff = require('fileName');
-    process(toPuff);
+    return {};
 }
 
-async function process(data) {
+async function puff(data) {
     const defaultLayer = layer(data.default);
 
     Object.keys(data.environments).forEach(env => {
@@ -17,7 +31,7 @@ async function process(data) {
 
         data.environments[env].regions.forEach(r => {
             const contents = template;
-            var finalLayer = merge(envLayer, layer(r[Object.keys(r)[0]]));
+            const finalLayer = merge(envLayer, layer(r[Object.keys(r)[0]]));
 
             contents.parameters = MapToObject(finalLayer);
             const region = Object.keys(r)[0];

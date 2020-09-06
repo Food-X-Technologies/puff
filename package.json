@@ -17,9 +17,10 @@
   "bin": "./index.js",
   "puff": "./index.js",
   "scripts": {
-    "puff": "node ./index.js"
+    "puff": "node ./index.js -y happy.yaml -t template.json"
   },
   "dependencies": {
-    "yamljs": "^0.3.0"
+    "yamljs": "^0.3.0",
+    "yargs": "^15.4.1"
   }
 }
