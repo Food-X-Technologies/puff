@@ -4,7 +4,7 @@ const glob = require('glob');
 const path = require('path');
 const yamljs = require('yamljs');
 const argv = require('yargs')
-    .option('path', { alias: 'p', default: __dirname })
+    .option('path', { alias: 'p', default: process.cwd() })
     .option('template', { alias: 't', default: '.test/example.json' })
     .argv;
 
