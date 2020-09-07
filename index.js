@@ -33,7 +33,7 @@ async function puff(template, dir, data) {
 
     Object.keys(data.environments).forEach(env => {
         const envLayer = merge(defaultLayer, layer(data.environments[env]));
-        envLayer.set('region', env);
+        envLayer.set('region', { value: env });
 
         data.environments[env].regions.forEach(r => {
             const contents = template;
