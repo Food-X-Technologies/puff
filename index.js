@@ -41,10 +41,10 @@ async function puff(template, dir, data) {
             contents.parameters = MapToObject(finalLayer);
             const region = Object.keys(r)[0];
 
-            const fileName = './' + data.name + '.' + env + '.' + region + '.json';
+            const fileName = path.join(dir, data.name + '.' + env + '.' + region + '.json');
             console.log('creating:', fileName);
 
-            fs.writeFile(path.join(dir, fileName)
+            fs.writeFile(fileName
                 , JSON.stringify(contents, null, 1)
                 , {
                     flag: 'w+',
