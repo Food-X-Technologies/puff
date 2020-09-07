@@ -76,13 +76,15 @@ function MapToObject(m) {
 function layer(data) {
     const map = new Map();
 
-    const keys = Object.keys(data);
-    if (0 < keys.length) {
-        keys.forEach(element => {
-            if ('regions' !== element) {
-                map.set(element, { value: data[element] });
-            }
-        });
+    if (null != data) {
+        const keys = Object.keys(data);
+        if (0 < keys.length) {
+            keys.forEach(element => {
+                if ('regions' !== element) {
+                    map.set(element, { value: data[element] });
+                }
+            });
+        }
     }
     return map;
 }
