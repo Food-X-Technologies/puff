@@ -72,15 +72,18 @@ function MapToObject(m) {
 
     return selfIterator(m);
 }
+
 function layer(data) {
     const map = new Map();
 
-    Object.keys(data).forEach(element => {
-        if ('regions' !== element) {
-            map.set(element, { value: data[element] });
-        }
-    });
-
+    const keys = Object.keys(data);
+    if (0 < keys.length) {
+        keys.forEach(element => {
+            if ('regions' !== element) {
+                map.set(element, { value: data[element] });
+            }
+        });
+    }
     return map;
 }
 
