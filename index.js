@@ -45,7 +45,7 @@ async function puff(template, dir, data) {
             console.log('creating:', fileName);
 
             fs.writeFile(path.join(dir, fileName)
-                , JSON.stringify(contents)
+                , JSON.stringify(contents, null, 1)
                 , {
                     flag: 'w+',
                     encoding: "utf8"
