@@ -36,12 +36,11 @@ async function puff(template, dir, data) {
 
         data.environments[env].regions.forEach(r => {
             const contents = template;
-            const regionKey = Object.keys(r)[0];
-            const finalLayer = merge(envLayer, layer(r[regionKey]));
-            envLayer.set('region', { value: regionKey });
+            const region = Object.keys(r)[0];
+            const finalLayer = merge(envLayer, layer(r[region]));
+            finalLayer.set('region', { value: region });
 
             contents.parameters = MapToObject(finalLayer);
-            const region = Object.keys(r)[0];
 
             const fileName = path.join(dir, data.name + '.' + env + '.' + region + '.json');
             console.log('creating:', fileName);
