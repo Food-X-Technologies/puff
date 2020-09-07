@@ -21,13 +21,14 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
         if (!yml.includes('node_modules') && !yml.includes('azure-pipelines')) {
             console.log('processing', yml);
 
+            const dir = path.dirname(yml);
             const d = yamljs.load(yml);
-            puff(t, d);
+            puff(t, dir, d);
         }
     }
 });
 
-async function puff(template, data) {
+async function puff(template, dir, data) {
     const defaultLayer = layer(data.default);
 
     Object.keys(data.environments).forEach(env => {
@@ -43,7 +44,7 @@ async function puff(template, data) {
             const fileName = './' + data.name + '.' + env + '.' + region + '.json';
             console.log('creating:', fileName);
 
-            fs.writeFile(fileName
+            fs.writeFile(path.join(dir, fileName)
                 , JSON.stringify(contents)
                 , {
                     flag: 'w+',
