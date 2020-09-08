@@ -34,28 +34,48 @@ async function puff(template, dir, data) {
     Object.keys(data.environments).forEach(env => {
         const envLayer = merge(defaultLayer, layer(data.environments[env]));
 
-        data.environments[env].regions.forEach(r => {
-            const contents = template;
-            const region = Object.keys(r)[0];
-            const finalLayer = merge(envLayer, layer(r[region]));
-            finalLayer.set('region', { value: region });
+        if (null != data.environments[env].region) {
+            const region = data.environments[env].region;
+            const finalLayer = envLayer;
+            finalLayer.set('region', { value: data.environments[env].region });
 
-            contents.parameters = MapToObject(finalLayer);
+            const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
+            Write(template, finalLayer, filename);
+        }
+        else if (null != data.environments[env].regions && 0 < data.environments[env].regions.length)
+        {
+            data.environments[env].regions.forEach(r => {
+                const region = Object.keys(r)[0];
+                const finalLayer = merge(envLayer, layer(r[region]));
+                finalLayer.set('region', { value: region });
 
-            const fileName = path.join(dir, data.name + '.' + env + '.' + region + '.json');
-            console.log('creating:', fileName);
-
-            fs.writeFile(fileName
-                , JSON.stringify(contents, null, 1)
-                , {
-                    flag: 'w+',
-                    encoding: "utf8"
-                }
-                , write
-            );
-        });
+                const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
+                Write(template, finalLayer, filename);
+            });
+        }
+        else
+        {
+            const filename = path.join(dir, data.name + '.' + env + '.json');
+            Write(template, envLayer, filename);
+        }
     });
 }
+
+async function Write(template, final, filename) {
+    const contents = template;
+    contents.parameters = MapToObject(final);
+
+    console.log('creating:', filename);
+    fs.writeFile(filename
+        , JSON.stringify(contents, null, 1)
+        , {
+            flag: 'w+',
+            encoding: "utf8"
+        }
+        , write
+    );
+}
+
 
 function MapToObject(m) {
     function selfIterator(map) {
