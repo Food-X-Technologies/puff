@@ -55,7 +55,7 @@ async function puff(template, dir, data) {
         }
         else if (envLayer.has('region'))
         {
-            const region = envLayer.get('region');
+            const region = envLayer.get('region').value;
             const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
             Write(template, envLayer, filename);
         }
