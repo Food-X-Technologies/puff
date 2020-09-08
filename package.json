@@ -11,7 +11,7 @@
     "type": "git",
     "url": "https://github.com/Food-X-Technologies/puff.git"
   },
-  "description": "Convert json files to bigger json files.",
+  "description": "Convert yaml into Azure ARM parameters templates (json).",
   "homepage": "https://github.com/Food-X-Technologies/puff/blob/main/README.md",
   "url": "https://github.com/Food-X-Technologies/puff/issues",
   "main": "index.js",
