@@ -37,7 +37,7 @@ async function puff(template, dir, data) {
         if (null != data.environments[env].region) {
             const region = data.environments[env].region;
             const finalLayer = envLayer;
-            finalLayer.set('region', { value: data.environments[env].region });
+            finalLayer.set('region', { value: region });
 
             const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
             Write(template, finalLayer, filename);
@@ -52,6 +52,12 @@ async function puff(template, dir, data) {
                 const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
                 Write(template, finalLayer, filename);
             });
+        }
+        else if (envLayer.has('region'))
+        {
+            const region = envLayer.get('region');
+            const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
+            Write(template, envLayer, filename);
         }
         else
         {
