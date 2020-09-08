@@ -12,7 +12,7 @@ node ./index.js -t ./template.json
 ## NPM
 ```
   "scripts": {
-    "puff": "puff -t default.json"
+    "puff": "puff -t template.json"
 }
 ```
 
