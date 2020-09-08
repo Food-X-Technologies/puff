@@ -10,6 +10,4 @@ environments:
         key1: value1abc
   two:
     key4: value4two
-    regions:
-    - xyz:
-        key1: value1xyz
+    region: xyz
