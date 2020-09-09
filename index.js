@@ -107,7 +107,9 @@ function layer(data) {
         if (0 < keys.length) {
             keys.forEach(element => {
                 if ('regions' !== element) {
-                    map.set(element, { value: data[element] });
+                    const val = (data[element].reference) ? data[element] : { value: data[element] };
+                    
+                    map.set(element, val );
                 }
             });
         }

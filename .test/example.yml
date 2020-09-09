@@ -11,3 +11,9 @@ environments:
   two:
     key4: value4two
     region: xyz
+  three:
+    appValue3:
+      reference:
+        secretName: thisismysecret
+        keyVault:
+          id: thisismyid
