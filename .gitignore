@@ -60,9 +60,6 @@ typings/
 # next.js build output
 .next
 
-# package lock node
-package-lock.json
-
 # test results
 test-results.trx
 

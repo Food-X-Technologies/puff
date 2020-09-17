@@ -9,13 +9,15 @@ const argv = require('yargs')
     .argv;
 
 const rootDir = argv.p;
-console.log('root dir', rootDir);
+console.log('root:', rootDir);
 
 const template = path.join(rootDir, argv.template);
-console.log('template', template);
+console.log('template:', template);
 const t = require(template);
+let generated = 0;
 
 glob(rootDir + '/**/*.yml', {}, (err, files) => {
+    let count = 0;
     for (var i = 0; i < files.length; i++) {
         const yml = files[i];
         if (!yml.includes('node_modules') && !yml.includes('azure-pipelines')) {
@@ -24,8 +26,12 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
             const dir = path.dirname(yml);
             const d = yamljs.load(yml);
             puff(t, dir, d);
+
+            count++;
         }
     }
+
+    console.log('processed:', count, "generated:", generated);
 });
 
 async function puff(template, dir, data) {
@@ -71,7 +77,6 @@ async function Write(template, final, filename) {
     const contents = template;
     contents.parameters = MapToObject(final);
 
-    console.log('creating:', filename);
     fs.writeFile(filename
         , JSON.stringify(contents, null, 1)
         , {
@@ -80,6 +85,9 @@ async function Write(template, final, filename) {
         }
         , write
     );
+
+    console.log('created:', path.basename(filename));
+    generated++;
 }
 
 
