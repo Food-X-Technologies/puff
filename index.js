@@ -18,7 +18,7 @@ const rootDir = argv.p;
 const template = path.join(rootDir, argv.template);
 console.log('template:', template);
 
-const t = require(template);
+const t = del ? undefined : require(template);
 let generated = 0;
 let deleted = 0;
 
