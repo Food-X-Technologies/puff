@@ -20,9 +20,6 @@ const template = {
     "parameters": {}
 };
 
-let generated = 0;
-let deleted = 0;
-
 glob(rootDir + '/**/*.yml', {}, (err, files) => {
     let count = 0;
     for (var i = 0; i < files.length; i++) {
@@ -38,8 +35,7 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
         }
     }
 
-    if (del) console.log('processed:', count, "deleted:", deleted);
-    else console.log('processed:', count, "generated:", generated);
+    console.log('processed:', count);
 });
 
 async function puff(del, template, dir, data) {
@@ -88,7 +84,6 @@ async function Delete(filename) {
             if (err.code != 'ENOENT') return console.log(err);
         } else {
             console.log('deleted:', path.basename(filename));
-            deleted++;
         }
     });
 }
@@ -107,7 +102,6 @@ async function Write(template, final, filename) {
             if (err) console.log(err);
             else {
                 console.log('created:', path.basename(filename));
-                generated++;
             }
         }
     );
