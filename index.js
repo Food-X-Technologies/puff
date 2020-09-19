@@ -29,6 +29,8 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
             const dir = path.dirname(yml);
             const d = yamljs.load(yml);
+            
+            console.log('processing', path.basename(yml));
             puff(del, template, dir, d);
 
             count++;
