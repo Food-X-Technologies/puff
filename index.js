@@ -102,13 +102,15 @@ async function Write(template, final, filename) {
             flag: 'w+',
             encoding: "utf8"
         }
-        , write
+        , function (err, data) {
+            if (err) console.log(err);
+            else {
+                console.log('created:', path.basename(filename));
+                generated++;
+            }
+        }
     );
-
-    console.log('created:', path.basename(filename));
-    generated++;
 }
-
 
 function MapToObject(m) {
     function selfIterator(map) {
@@ -146,10 +148,4 @@ function layer(data) {
 
 function merge(a, b) {
     return new Map(function* () { yield* a; yield* b; }());
-}
-
-async function write(err, data) {
-    if (err) {
-        console.log(err);
-    }
 }
