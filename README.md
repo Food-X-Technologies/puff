@@ -15,6 +15,15 @@ node ./index.js -t ./template.json
     "puff": "puff -t template.json"
 }
 ```
+### Then
+```
+$ npm run puff
+```
+
+#### Delete
+```
+$ npm run puff -delete
+```
 
 # Examples
 ## Yaml

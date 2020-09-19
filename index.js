@@ -1,20 +1,26 @@
 #!/usr/bin/env node
+
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
 const yamljs = require('yamljs');
 const argv = require('yargs')
-    .option('path', { alias: 'p', default: process.cwd() })
+    .option('path', { alias: 'p', default: process.cwd(), description: 'Root path for finding yml files to generate from.' })
     .option('template', { alias: 't', default: '.test/example.json' })
+    .option('delete', { alias: 'd', type: 'boolean', description: 'Delete files that were generated.' })
     .argv;
 
-const rootDir = argv.p;
-console.log('root:', rootDir);
+const del = argv.d;
+if (del) console.log('deleting generated files...');
+else console.log('generating files...')
 
+const rootDir = argv.p;
 const template = path.join(rootDir, argv.template);
 console.log('template:', template);
+
 const t = require(template);
 let generated = 0;
+let deleted = 0;
 
 glob(rootDir + '/**/*.yml', {}, (err, files) => {
     let count = 0;
@@ -25,16 +31,17 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
             const dir = path.dirname(yml);
             const d = yamljs.load(yml);
-            puff(t, dir, d);
+            puff(del, t, dir, d);
 
             count++;
         }
     }
 
-    console.log('processed:', count, "generated:", generated);
+    if (del) console.log('processed:', count, "deleted:", deleted);
+    else console.log('processed:', count, "generated:", generated);
 });
 
-async function puff(template, dir, data) {
+async function puff(del, template, dir, data) {
     const defaultLayer = layer(data.default);
 
     Object.keys(data.environments).forEach(env => {
@@ -46,29 +53,41 @@ async function puff(template, dir, data) {
             finalLayer.set('region', { value: region });
 
             const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
-            Write(template, finalLayer, filename);
+            if (del) Delete(filename)
+            else Write(template, finalLayer, filename);
         }
-        else if (null != data.environments[env].regions && 0 < data.environments[env].regions.length)
-        {
+        else if (null != data.environments[env].regions && 0 < data.environments[env].regions.length) {
             data.environments[env].regions.forEach(r => {
                 const region = Object.keys(r)[0];
                 const finalLayer = merge(envLayer, layer(r[region]));
                 finalLayer.set('region', { value: region });
 
                 const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
-                Write(template, finalLayer, filename);
+                if (del) Delete(filename)
+                else Write(template, finalLayer, filename);
             });
         }
-        else if (envLayer.has('region'))
-        {
+        else if (envLayer.has('region')) {
             const region = envLayer.get('region').value;
             const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
-            Write(template, envLayer, filename);
+            if (del) Delete(filename)
+            else Write(template, envLayer, filename);
         }
-        else
-        {
+        else {
             const filename = path.join(dir, data.name + '.' + env + '.json');
-            Write(template, envLayer, filename);
+            if (del) Delete(filename)
+            else Write(template, envLayer, filename);
+        }
+    });
+}
+
+async function Delete(filename) {
+    fs.unlink(filename, function (err) {
+        if (err) {
+            if (err.code != 'ENOENT') return console.log(err);
+        } else {
+            console.log('deleted:', path.basename(filename));
+            deleted++;
         }
     });
 }
@@ -116,8 +135,8 @@ function layer(data) {
             keys.forEach(element => {
                 if ('regions' !== element) {
                     const val = (data[element].reference) ? data[element] : { value: data[element] };
-                    
-                    map.set(element, val );
+
+                    map.set(element, val);
                 }
             });
         }
