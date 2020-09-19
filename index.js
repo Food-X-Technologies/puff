@@ -25,11 +25,10 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
     for (var i = 0; i < files.length; i++) {
         const yml = files[i];
         if (!yml.includes('node_modules') && !yml.includes('azure-pipelines')) {
-            console.log('processing', yml);
 
             const dir = path.dirname(yml);
             const d = yamljs.load(yml);
-            
+
             console.log('processing', path.basename(yml));
             puff(del, template, dir, d);
 
