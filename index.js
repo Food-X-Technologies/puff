@@ -6,7 +6,6 @@ const path = require('path');
 const yamljs = require('yamljs');
 const argv = require('yargs')
     .option('path', { alias: 'p', default: process.cwd(), description: 'Root path for finding yml files to generate from.' })
-    .option('template', { alias: 't', default: '.test/example.json' })
     .option('delete', { alias: 'd', type: 'boolean', description: 'Delete files that were generated.' })
     .argv;
 
@@ -15,10 +14,12 @@ if (del) console.log('deleting generated files...');
 else console.log('generating files...')
 
 const rootDir = argv.p;
-const template = path.join(rootDir, argv.template);
-console.log('template:', template);
+const template = {
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {}
+};
 
-const t = del ? undefined : require(template);
 let generated = 0;
 let deleted = 0;
 
@@ -31,7 +32,7 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
             const dir = path.dirname(yml);
             const d = yamljs.load(yml);
-            puff(del, t, dir, d);
+            puff(del, template, dir, d);
 
             count++;
         }

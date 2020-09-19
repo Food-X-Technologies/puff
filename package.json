@@ -1,6 +1,6 @@
 {
   "name": "@foodx/puff",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "license": "MIT",
   "author": {
     "name": "Jef King",
@@ -18,7 +18,8 @@
   "bin": "./index.js",
   "puff": "./index.js",
   "scripts": {
-    "puff": "node ./index.js -t ./.test/example.json"
+    "puff": "node ./index.js",
+    "unpuff": "node ./index.js -d"
   },
   "dependencies": {
     "yamljs": "^0.3.0",

@@ -12,7 +12,8 @@ node ./index.js -t ./template.json
 ## NPM
 ```
   "scripts": {
-    "puff": "puff -t template.json"
+    "puff": "puff",
+    "unpuff": "puff -d"
 }
 ```
 ### Then
@@ -22,7 +23,7 @@ $ npm run puff
 
 #### Delete
 ```
-$ npm run puff -delete
+$ npm run unpuff
 ```
 
 # Examples
