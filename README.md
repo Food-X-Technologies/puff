@@ -1,9 +1,6 @@
 # Introduction 
 Convert yaml into Azure ARM parameters templates (json).
 
-# Usage
-template/t: template to convert into.
-
 ## Node
 ```
 node ./index.js -t ./template.json
@@ -16,7 +13,7 @@ node ./index.js -t ./template.json
     "puffin": "puff -d"
 }
 ```
-### Then
+### Generate
 ```
 $ npm run puff
 ```
