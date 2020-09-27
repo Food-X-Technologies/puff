@@ -17,9 +17,10 @@
   "main": "index.js",
   "bin": "./index.js",
   "puff": "./index.js",
+  "puffin": "./index.js -d",
   "scripts": {
     "puff": "node ./index.js",
-    "unpuff": "node ./index.js -d"
+    "puffin": "node ./index.js -d"
   },
   "dependencies": {
     "yamljs": "^0.3.0",

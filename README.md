@@ -13,7 +13,7 @@ node ./index.js -t ./template.json
 ```
   "scripts": {
     "puff": "puff",
-    "unpuff": "puff -d"
+    "puffin": "puff -d"
 }
 ```
 ### Then
