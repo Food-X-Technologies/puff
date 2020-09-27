@@ -44,8 +44,8 @@ environments:
     region: xyz
 ```
 
-## Output (json)
-### example.one.abc.json
+## Outputs (json)
+### 1. example.one.abc.json
 ```
 {
  "parameters": {
@@ -64,7 +64,7 @@ environments:
  }
 }
 ```
-### example.two.xyz.json
+### 2. example.two.xyz.json
 ```
 {
  "parameters": {
