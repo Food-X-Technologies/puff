@@ -44,13 +44,6 @@ environments:
     region: xyz
 ```
 
-## Template (json)
-```
-{
-    "parameters": {}
-}
-```
-
 ## Output (json)
 ### example.one.abc.json
 ```
