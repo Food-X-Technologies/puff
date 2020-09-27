@@ -27,7 +27,7 @@ $ npm run puffin
 ```
 
 # Examples
-## Yaml
+## Input (yaml)
 ```
 name: example
 default:
