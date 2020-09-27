@@ -23,7 +23,7 @@ $ npm run puff
 
 #### Delete
 ```
-$ npm run unpuff
+$ npm run puffin
 ```
 
 # Examples
