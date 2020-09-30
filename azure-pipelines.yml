@@ -1,5 +1,5 @@
 trigger:
-- master
+- main
 
 resources:
 - repo: self
@@ -8,18 +8,17 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-- stage: Build
-  displayName: Build image
-  jobs:  
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Docker@2
-      displayName: Build an image
-      inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/dockerfile'
-        tags: |
-          $(tag)
+  - stage: Pipeline
+    jobs:
+    - job: Build
+      steps:
+      - task: Npm@1
+        displayName: NPM Install
+        inputs:
+          command: install
+          workingDir: .
+      - task: Npm@1
+        displayName: Generate
+        inputs:
+          command: 'custom'
+          customCommand: 'run puff'
