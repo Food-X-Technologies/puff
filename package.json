@@ -1,11 +1,11 @@
 {
   "name": "@foodx/puff",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "license": "MIT",
   "author": {
     "name": "Jef King",
-    "email": "jef@foodx.io",
-    "url": "https://foodx.io"
+    "email": "jef@foodxtech.com",
+    "url": "https://foodxtech.com"
   },
   "repository": {
     "type": "git",
