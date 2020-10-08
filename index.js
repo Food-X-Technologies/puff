@@ -142,7 +142,7 @@ async function Delete(filename) {
         if (err) {
             if (err.code != 'ENOENT') return console.log(err);
         } else {
-            console.log('deleted:', path.basename(filename));
+            console.log('-', path.basename(filename));
         }
     });
 }
@@ -160,7 +160,7 @@ async function Write(template, final, filename) {
         , function (err, data) {
             if (err) console.log(err);
             else {
-                console.log('created:', path.basename(filename));
+                console.log('+', path.basename(filename));
             }
         }
     );
