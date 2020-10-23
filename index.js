@@ -117,8 +117,7 @@ async function puff(del, template, dir, n, data) {
             finalLayer.set('region', { value: region });
 
             const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
-            if (del) Delete(filename)
-            else Write(template, finalLayer, filename);
+            Io(filename, template, finalLayer, filename);
         }
         else if (null != data.environments[env].regions && 0 < data.environments[env].regions.length) {
             data.environments[env].regions.forEach(r => {
@@ -127,22 +126,25 @@ async function puff(del, template, dir, n, data) {
                 finalLayer.set('region', { value: region });
 
                 const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
-                if (del) Delete(filename)
-                else Write(template, finalLayer, filename);
+                Io(filename, template, finalLayer, filename);
             });
         }
         else if (envLayer.has('region')) {
             const region = envLayer.get('region').value;
             const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
-            if (del) Delete(filename)
-            else Write(template, envLayer, filename);
+            Io(filename, template, envLayer, filename);
         }
         else {
             const filename = path.join(dir, name + '.' + env + '.json');
-            if (del) Delete(filename)
-            else Write(template, envLayer, filename);
+            Io(filename, template, envLayer, filename);
         }
     });
+}
+
+async function Io(filename, template, layer, filename)
+{
+    if (del) Delete(filename)
+    else Write(template, layer, filename);
 }
 
 async function Delete(filename) {
