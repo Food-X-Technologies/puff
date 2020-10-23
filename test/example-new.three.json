@@ -8,9 +8,6 @@
   "key2": {
    "value": "value2default"
   },
-  "name": {
-   "value": "example-new"
-  },
   "appValue3": {
    "reference": {
     "secretName": "thisismysecret",

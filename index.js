@@ -98,8 +98,8 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
     console.log('processed:', count);
 });
 
-async function puff(del, template, dir, name, data) {
-    data.name = data.name || name;
+async function puff(del, template, dir, n, data) {
+    const name = data.name || n;
     const defaultLayer = layer(data.default||data);
 
     Object.keys(data.environments).forEach(env => {
@@ -110,7 +110,7 @@ async function puff(del, template, dir, name, data) {
             const finalLayer = envLayer;
             finalLayer.set('region', { value: region });
 
-            const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
+            const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
             if (del) Delete(filename)
             else Write(template, finalLayer, filename);
         }
@@ -120,19 +120,19 @@ async function puff(del, template, dir, name, data) {
                 const finalLayer = merge(envLayer, layer(r[region]));
                 finalLayer.set('region', { value: region });
 
-                const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
+                const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
                 if (del) Delete(filename)
                 else Write(template, finalLayer, filename);
             });
         }
         else if (envLayer.has('region')) {
             const region = envLayer.get('region').value;
-            const filename = path.join(dir, data.name + '.' + env + '.' + region + '.json');
+            const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
             if (del) Delete(filename)
             else Write(template, envLayer, filename);
         }
         else {
-            const filename = path.join(dir, data.name + '.' + env + '.json');
+            const filename = path.join(dir, name + '.' + env + '.json');
             if (del) Delete(filename)
             else Write(template, envLayer, filename);
         }
