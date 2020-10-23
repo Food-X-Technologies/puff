@@ -1,22 +1,22 @@
-name: example
+name: srv-
 key1: value1default
 key2: value2default
 environments:
-one:
+  one:
     key3: value2one
     regions:
     - abc:
         key1: value1abc
-two:
+  two:
     key4: value4two
     region: xyz
-three:
+  three:
     appValue3:
-    reference:
+      reference:
         secretName: thisismysecret
         keyVault:
-        id: thisismyid
-instances:
-- www.google.com
-- www.microsoft.com
-- www.slashdot.org
+          id: thisismyid
+services:
+    me
+    you
+    us
