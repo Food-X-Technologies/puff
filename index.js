@@ -87,8 +87,9 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
             const dir = path.dirname(yml);
             const d = yamljs.load(yml);
 
-            console.log('processing', path.basename(yml));
-            puff(del, template, dir, d);
+            let name = path.parse(yml).name;
+            console.log('processing', name);
+            puff(del, template, dir, name, d);
 
             count++;
         }
@@ -97,8 +98,9 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
     console.log('processed:', count);
 });
 
-async function puff(del, template, dir, data) {
-    const defaultLayer = layer(data.default);
+async function puff(del, template, dir, name, data) {
+    data.name = data.name === undefined ? name : data.name;
+    const defaultLayer = layer(data);
 
     Object.keys(data.environments).forEach(env => {
         const envLayer = merge(defaultLayer, layer(data.environments[env]));
@@ -189,7 +191,7 @@ function layer(data) {
         const keys = Object.keys(data);
         if (0 < keys.length) {
             keys.forEach(element => {
-                if ('regions' !== element) {
+                if ('regions' !== element && 'environments' !== element) {
                     const val = (data[element].reference) ? data[element] : { value: data[element] };
 
                     map.set(element, val);
