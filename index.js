@@ -98,29 +98,39 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
 async function puff(del, template, dir, n, data) {
     let name = data.name || n;
-    const defaultLayer = layer(data.default || data);
+    const baseLayer = layer(data.default || data);
 
-    if (undefined !== data.services) {
-        name = data.services.puffprefix || name;
-            console.log("prefix: ", name);
-        Object.keys(data.services).forEach(service => {
+    Service(del, template, dir, name, baseLayer, data.environments, data.services);
+}
+
+async function Service(del, template, dir, name, baseLayer, environments, services) {
+
+    let serviceLayer;
+    if (undefined !== services) {
+        name = services.puffprefix || name;
+        console.log("prefix: ", name);
+        Object.keys(services).forEach(service => {
             console.log(service);
         });
     }
 
-    Object.keys(data.environments).forEach(env => {
-        const envLayer = merge(defaultLayer, layer(data.environments[env]));
+    Env(del, template, dir, name, baseLayer, serviceLayer, environments)
+}
 
-        if (null != data.environments[env].region) {
-            const region = data.environments[env].region;
+async function Env(del, template, dir, name, baseLayer, serviceLayer, environments) {
+    Object.keys(environments).forEach(env => {
+        const envLayer = merge(baseLayer, layer(environments[env]));
+
+        if (null != environments[env].region) {
+            const region = environments[env].region;
             const finalLayer = envLayer;
             finalLayer.set('region', { value: region });
 
             const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
             Io(filename, template, finalLayer, filename);
         }
-        else if (null != data.environments[env].regions && 0 < data.environments[env].regions.length) {
-            data.environments[env].regions.forEach(r => {
+        else if (null != environments[env].regions && 0 < environments[env].regions.length) {
+            environments[env].regions.forEach(r => {
                 const region = Object.keys(r)[0];
                 const finalLayer = merge(envLayer, layer(r[region]));
                 finalLayer.set('region', { value: region });
@@ -141,8 +151,8 @@ async function puff(del, template, dir, n, data) {
     });
 }
 
-async function Io(filename, template, layer, filename)
-{
+
+async function Io(filename, template, layer, filename) {
     if (del) Delete(filename)
     else Write(template, layer, filename);
 }
@@ -210,6 +220,7 @@ function layer(data) {
             });
         }
     }
+
     return map;
 }
 
