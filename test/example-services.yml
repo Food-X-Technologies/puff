@@ -1,3 +1,4 @@
+name: srv-
 key1: value1default
 key2: value2default
 environments:
@@ -16,7 +17,6 @@ environments:
         keyVault:
           id: thisismyid
 services:
-puff-prefix: srv-
-  me:
-  you:
-  us:
+  - me
+  - you
+  - us

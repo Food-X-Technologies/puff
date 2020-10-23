@@ -10,8 +10,7 @@ const argv = require('yargs')
     .argv;
 
 const del = argv.d;
-if (del)
-{
+if (del) {
     const puffin = `    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
     ░░░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒████████░░░░░░░░░░░░░░░░
     ░░░░░░░░░░░░▒▒▒▒▒▒▒▒░░░░      ░░▓▓░░░░░░░░░░░░░░
@@ -52,8 +51,7 @@ if (del)
     console.log(puffin);
     console.log('deleting generated files...');
 }
-else
-{
+else {
     const jelly = `
                                     ▒▒▒▒▒▒▒▒▒▒                                      
                                   ▒▒▒▒▒▒▒▒▒▒▒▒▒▒                                    
@@ -99,8 +97,16 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 });
 
 async function puff(del, template, dir, n, data) {
-    const name = data.name || n;
-    const defaultLayer = layer(data.default||data);
+    let name = data.name || n;
+    const defaultLayer = layer(data.default || data);
+
+    if (undefined !== data.services) {
+        name = data.services.puffprefix || name;
+            console.log("prefix: ", name);
+        Object.keys(data.services).forEach(service => {
+            console.log(service);
+        });
+    }
 
     Object.keys(data.environments).forEach(env => {
         const envLayer = merge(defaultLayer, layer(data.environments[env]));
@@ -194,7 +200,7 @@ function layer(data) {
                 if ('regions' !== element
                     && 'environments' !== element
                     && 'services' !== element
-                    && 'puff-prefix' !== element) {
+                    && 'puffprefix' !== element) {
                     const val = (data[element].reference) ? data[element] : { value: data[element] };
 
                     map.set(element, val);
