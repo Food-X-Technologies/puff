@@ -17,6 +17,6 @@ environments:
         keyVault:
           id: thisismyid
 services:
-    me
-    you
-    us
+  me:
+  you:
+  us:
