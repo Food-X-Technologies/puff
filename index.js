@@ -191,7 +191,10 @@ function layer(data) {
         const keys = Object.keys(data);
         if (0 < keys.length) {
             keys.forEach(element => {
-                if ('regions' !== element && 'environments' !== element && 'services' !== element && 'name' !== element) {
+                if ('regions' !== element
+                    && 'environments' !== element
+                    && 'services' !== element
+                    && 'puff-prefix' !== element) {
                     const val = (data[element].reference) ? data[element] : { value: data[element] };
 
                     map.set(element, val);
