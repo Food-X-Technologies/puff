@@ -99,8 +99,8 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 });
 
 async function puff(del, template, dir, name, data) {
-    data.name = data.name === undefined ? name : data.name;
-    const defaultLayer = layer(data.default);
+    data.name = data.name || name;
+    const defaultLayer = layer(data.default||data);
 
     Object.keys(data.environments).forEach(env => {
         const envLayer = merge(defaultLayer, layer(data.environments[env]));
