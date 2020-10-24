@@ -17,20 +17,23 @@ environments:
         keyVault:
           id: thisismyid
 services:
-- me:
-    one:
-      key3: value99
-      regions:
-      - abc:
-          key1: value1xyz
-- you:
-    two:
-      key4: you4boo
-      region: xyz
-- us:
-    three:
-      appValue3:
-        reference:
-          secretName: happy
-          keyVault:
-            id: place
+  me:
+    environments:
+      one:
+        key3: value99
+        regions:
+        - abc:
+            key1: value1xyz
+  you:
+    environments:
+      two:
+        key4: you4boo
+        region: xyz
+  us:
+    environments:
+      three:
+        appValue3:
+          reference:
+            secretName: happy
+            keyVault:
+              id: place
