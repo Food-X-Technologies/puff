@@ -100,33 +100,40 @@ async function puff(del, template, dir, n, data) {
     let name = data.name || n;
     const baseLayer = layer(data.default || data);
 
-    Service(del, template, dir, name, baseLayer, data.environments, data.services);
+    var envs = Env(del, template, dir, name, baseLayer, data.environments);
+    var services = Services(del, template, dir, name, baseLayer, data.services);
 }
 
-async function Service(del, template, dir, name, baseLayer, environments, services) {
+async function Services(del, template, dir, name, baseLayer, services) {
+    const srvs = new Map();
 
-    let serviceLayer;
     if (undefined !== services) {
         name = services.puffprefix || name;
         console.log("prefix: ", name);
+        
         Object.keys(services).forEach(service => {
-            console.log(service);
+            console.log("service: ", service);
+            const serviceLayer = merge(baseLayer, layer(services[service]));
         });
     }
 
-    Env(del, template, dir, name, baseLayer, serviceLayer, environments)
+    return srvs;
 }
 
-async function Env(del, template, dir, name, baseLayer, serviceLayer, environments) {
+async function Env(del, template, dir, name, baseLayer, environments) {
+    const envs = new Map();
+
     Object.keys(environments).forEach(env => {
         const envLayer = merge(baseLayer, layer(environments[env]));
+
+        envs[env] = envLayer;
 
         if (null != environments[env].region) {
             const region = environments[env].region;
             const finalLayer = envLayer;
             finalLayer.set('region', { value: region });
 
-            const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
+            const filename = FileName(dir, name, env, region);
             Io(filename, template, finalLayer, filename);
         }
         else if (null != environments[env].regions && 0 < environments[env].regions.length) {
@@ -135,22 +142,29 @@ async function Env(del, template, dir, name, baseLayer, serviceLayer, environmen
                 const finalLayer = merge(envLayer, layer(r[region]));
                 finalLayer.set('region', { value: region });
 
-                const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
+                const filename = FileName(dir, name, env, region);
                 Io(filename, template, finalLayer, filename);
             });
         }
         else if (envLayer.has('region')) {
             const region = envLayer.get('region').value;
-            const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
+            const filename = FileName(dir, name, env, region);
             Io(filename, template, envLayer, filename);
         }
         else {
-            const filename = path.join(dir, name + '.' + env + '.json');
+            const filename = FileName(dir, name, env);
             Io(filename, template, envLayer, filename);
         }
     });
+
+    return envs;
 }
 
+function FileName(dir, name, env, region)
+{
+    const fn = (region === undefined) ? name + '.' + env : name + '.' + env + '.' + region;
+    return path.join(dir, fn + '.json');
+}
 
 async function Io(filename, template, layer, filename) {
     if (del) Delete(filename)
@@ -211,8 +225,7 @@ function layer(data) {
             keys.forEach(element => {
                 if ('regions' !== element
                     && 'environments' !== element
-                    && 'services' !== element
-                    && 'puffprefix' !== element) {
+                    && 'services' !== element) {
                     const val = (data[element].reference) ? data[element] : { value: data[element] };
 
                     map.set(element, val);
