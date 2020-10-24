@@ -24,16 +24,17 @@ services:
         regions:
         - abc:
             key1: value1xyz
-  you:
-    environments:
-      two:
-        key4: you4boo
-        region: xyz
-  us:
-    environments:
-      three:
-        appValue3:
-          reference:
-            secretName: happy
-            keyVault:
-              id: place
+      you:
+        key2: value2default
+        environments:
+          two:
+            key4: you4boo
+            region: xyz
+      us:
+        environments:
+          three:
+            appValue3:
+              reference:
+                secretName: happy
+                keyVault:
+                  id: place

@@ -99,67 +99,70 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 async function puff(del, template, dir, n, data) {
     let name = data.name || n;
     const baseLayer = layer(data.default || data);
+    const baseEnvironments = Environments(baseLayer, data.environments);
 
-    var envs = Env(del, template, dir, name, baseLayer, data.environments);
-    var services = Services(del, template, dir, name, baseLayer, data.services);
+    const services = new Map([[name, new Map([['environments', baseEnvironments]])]]);
+    // const services = (data.services === undefined) ?
+    //     new Map([[name, new Map([['environments', baseEnvironments]])]])
+    //     : Services(baseLayer, data.services);
+
+    Object.keys(services).forEach(service => {
+        console.log('service:' + service);
+
+        Object.keys(serivces[service].environments).forEach(env => {
+            console.log('env:' + serivces[service][env]);
+
+            const filename = FileName(dir, service, env, serivces[service][env].region);
+            Io(filename, template, finalLayer, filename);
+        });
+    });
 }
 
-async function Services(del, template, dir, name, baseLayer, services) {
+function Services(baseLayer, services) {
     const srvs = new Map();
 
-    if (undefined !== services) {
-        
-        Object.keys(services).forEach(service => {
-            console.log("service: ", service);
-            const serviceLayer = merge(baseLayer, layer(services[service]));
+    Object.keys(services).forEach(service => {
+        srvs[service] = new Map();
+
+        const serviceLayer = merge(baseLayer, layer(services[service]));
+        const environments = Environments(serviceLayer, services[service].environments);
+
+        Object.keys(environments).forEach(env => {
+            srvs[service][env] = environments[env];
         });
-    }
+    });
 
     return srvs;
 }
 
-async function Env(del, template, dir, name, baseLayer, environments) {
+function Environments(baseLayer, environments) {
     const envs = new Map();
 
     Object.keys(environments).forEach(env => {
         const envLayer = merge(baseLayer, layer(environments[env]));
 
-        envs[env] = envLayer;
-
         if (null != environments[env].region) {
-            const region = environments[env].region;
             const finalLayer = envLayer;
-            finalLayer.set('region', { value: region });
-
-            const filename = FileName(dir, name, env, region);
-            Io(filename, template, finalLayer, filename);
+            finalLayer.set('region', { value: environments[env].region });
+            envs[env] = finalLayer;
         }
         else if (null != environments[env].regions && 0 < environments[env].regions.length) {
             environments[env].regions.forEach(r => {
                 const region = Object.keys(r)[0];
                 const finalLayer = merge(envLayer, layer(r[region]));
                 finalLayer.set('region', { value: region });
-
-                const filename = FileName(dir, name, env, region);
-                Io(filename, template, finalLayer, filename);
+                envs[env] = finalLayer;
             });
         }
-        else if (envLayer.has('region')) {
-            const region = envLayer.get('region').value;
-            const filename = FileName(dir, name, env, region);
-            Io(filename, template, envLayer, filename);
-        }
         else {
-            const filename = FileName(dir, name, env);
-            Io(filename, template, envLayer, filename);
+            envs[env] = envLayer;
         }
     });
 
     return envs;
 }
 
-function FileName(dir, name, env, region)
-{
+function FileName(dir, name, env, region) {
     const fn = (region === undefined) ? name + '.' + env : name + '.' + env + '.' + region;
     return path.join(dir, fn + '.json');
 }
