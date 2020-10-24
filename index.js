@@ -108,8 +108,6 @@ async function Services(del, template, dir, name, baseLayer, services) {
     const srvs = new Map();
 
     if (undefined !== services) {
-        name = services.puffprefix || name;
-        console.log("prefix: ", name);
         
         Object.keys(services).forEach(service => {
             console.log("service: ", service);
