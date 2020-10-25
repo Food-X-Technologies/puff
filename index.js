@@ -100,18 +100,9 @@ async function puff(del, template, dir, n, data) {
     let name = data.name || n;
     var base = remove(data.default || data, ['environments', 'services', 'name']);
     const environments = Environments(data.environments);
-    environments.forEach((value, key) => {
-        environments.set(key, deepmerge(base, value))
-    });
-    console.log(environments);
-    // data.services.forEach(srvs => {
-    //     console.log('srvs', srvs);
-    // });
-
-    
     environments.forEach((value, envKey) => {
-        const filename = FileName(dir, name, envKey);
-        Io(filename, template, environments);
+        const done = deepmerge(base, value);
+        Io(del, FileName(dir, name, envKey), template, done);
     });
 }
 
@@ -132,7 +123,7 @@ function Environments(environments) {
             const data = remove(environments[env], ['regions']);
             environments[env].regions.forEach(reg => {
                 const key = Object.keys(reg)[0];
-                envs.set(`${env}.${key}`, deepmerge(data, deepmerge({region: key}, reg[key])));
+                envs.set(`${env}.${key}`, deepmerge(data, deepmerge({ region: key }, reg[key])));
             });
         }
         else {
@@ -171,7 +162,7 @@ async function Delete(filename) {
 
 async function Write(template, final, filename) {
     const contents = template;
-    contents.parameters = MapToObject(final);
+    contents.parameters = Fatten(final);
 
     return await fs.writeFile(filename
         , JSON.stringify(contents, null, 1)
@@ -185,20 +176,9 @@ async function Write(template, final, filename) {
     );
 }
 
-function MapToObject(m) {
-    function selfIterator(map) {
-        return Array.from(map).reduce((acc, [key, value]) => {
-            if (value instanceof Map) {
-                acc[key] = selfIterator(value);
-            } else {
-                acc[key] = value;
-            }
-
-            return acc;
-        }, {})
-    }
-
-    return selfIterator(m);
+function Fatten(obj) {
+    Object.keys(obj).forEach(key => { if (obj[key].reference === undefined) obj[key] = { value: obj[key] }; });
+    return obj;
 }
 
 function layer(data) {
