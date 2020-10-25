@@ -134,17 +134,6 @@ function Environments(environments) {
     return envs;
 }
 
-function Services(envLayer, services) {
-    const srvs = new Map();
-
-    Object.keys(services).forEach(service => {
-        srvs.set(service, Environments(envLayer, services[service].environments));
-    });
-
-    return srvs;
-}
-
-
 function FileName(dir, name, env) {
     return path.join(dir, `${name}.${env}.json`);
 }
