@@ -108,10 +108,11 @@ async function puff(del, template, dir, n, data) {
 
     services.forEach((service, serviceKey) => {
         service.forEach((environment, environmentKey) => {
-            service.forEach((values, key) => {
-                const filename = FileName(dir, serviceKey, environmentKey, environment['region']);
-                Io(filename, template, values);
-
+            environment.forEach((regions, regionKey) => {
+                // const region = values.has('region') ? values.get('region') : undefined;
+                console.log(regionKey);
+                const filename = FileName(dir, serviceKey, environmentKey, regionKey);
+                Io(filename, template, regions);
             });
         });
     });
@@ -155,7 +156,9 @@ function Environments(baseLayer, environments) {
 }
 
 function FileName(dir, name, env, region) {
-    const fn = (region === undefined) ? name + '.' + env : name + '.' + env + '.' + region.value;
+    const fn = (region === undefined || region === null || region === '') ?
+        name + '.' + env :
+        name + '.' + env + '.' + region;
     return path.join(dir, fn + '.json');
 }
 
