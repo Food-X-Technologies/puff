@@ -3,7 +3,7 @@
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
-const { serialize } = require('v8');
+const deepmerge = require('deepmerge');
 const yamljs = require('yamljs');
 const argv = require('yargs')
     .option('path', { alias: 'p', default: process.cwd(), description: 'Root path for finding yml files to generate from.' })
@@ -85,7 +85,6 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
             const dir = path.dirname(yml);
             const d = yamljs.load(yml);
-
             let name = path.parse(yml).name;
             console.log('processing', name);
             puff(del, template, dir, name, d);
@@ -99,22 +98,40 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
 async function puff(del, template, dir, n, data) {
     let name = data.name || n;
-    const baseLayer = layer(data.default || data);
-    const envLayer = Environments(baseLayer, data.environments);
+    var baseLayer = remove(data.default || data, ['environments', 'services', 'name']);
+    const environments = Environments(data.environments);
+    console.log(environments);
+    // data.services.forEach(srvs => {
+    //     console.log('srvs', srvs);
+    // });
+}
 
-    const services = (data.services === undefined) ?
-        new Map([[name, new Map([[name, envLayer]])]])
-        : Services(envLayer, data.services);
+function remove(obj, keys) {
+    var target = {};
+    for (var i in obj) {
+        if (keys.indexOf(i) >= 0) continue;
+        if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+        target[i] = obj[i];
+    }
+    return target;
+}
 
-    services.forEach((service, serviceKey) => {
-        service.forEach((environment, environmentKey) => {
-            environment.forEach((regions, regionKey) => {
-                const region = regions.get('region');
-                const filename = FileName(dir, environmentKey, regionKey, region);
-                Io(filename, template, regions);
+function Environments(environments) {
+    const envs = new Map();
+    Object.keys(environments).forEach(env => {
+        if (undefined !== environments[env].regions) {
+            const data = remove(environments[env], ['regions']);
+            environments[env].regions.forEach(reg => {
+                const key = Object.keys(reg)[0];
+                envs.set(key, deepmerge(data, reg[key]));
             });
-        });
+        }
+        else {
+            envs.set(env, environments[env]);
+        }
     });
+
+    return envs;
 }
 
 function Services(envLayer, services) {
@@ -127,52 +144,22 @@ function Services(envLayer, services) {
     return srvs;
 }
 
-function Environments(baseLayer, environments) {
-    const envs = new Map();
-
-    Object.keys(environments).forEach(env => {
-        const envLayer = merge(baseLayer, layer(environments[env]));
-
-        if (null != environments[env].region) {
-            const finalLayer = envLayer;
-            finalLayer.set('region', { value: environments[env].region });
-            envs.set(env, finalLayer);
-        }
-        else if (null != environments[env].regions && 0 < environments[env].regions.length) {
-            environments[env].regions.forEach(r => {
-                const region = Object.keys(r)[0];
-                const finalLayer = merge(envLayer, layer(r[region]));
-                finalLayer.set('region', { value: region });
-                envs.set(env, finalLayer);
-            });
-        }
-        else {
-            envs.set(env, envLayer);
-        }
-    });
-
-    return envs;
-}
 
 function FileName(dir, name, env, region) {
-    const fn = (region === undefined || region === null || region === '') ?
+    const fn = (region === undefined || region === null || region.value === '') ?
         name + '.' + env :
         name + '.' + env + '.' + region.value;
     return path.join(dir, fn + '.json');
 }
 
-async function Io(filename, template, layer) {
+async function Io(del, filename, template, layer) {
     if (del) return await Delete(filename)
     else return await Write(template, layer, filename);
 }
 
 async function Delete(filename) {
     return await fs.unlink(filename, function (err) {
-        if (err) {
-            if (err.code != 'ENOENT') return console.log(err);
-        } else {
-            console.log('-', path.basename(filename));
-        }
+        if (err && err.code != 'ENOENT') return console.log(err);
     });
 }
 
@@ -188,9 +175,6 @@ async function Write(template, final, filename) {
         }
         , function (err, data) {
             if (err) console.log(err);
-            else {
-                console.log('+', path.basename(filename));
-            }
         }
     );
 }
