@@ -1,0 +1,26 @@
+{
+ "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+ "contentVersion": "1.0.0.0",
+ "parameters": {
+  "key1": {
+   "value": {
+    "value": "value1default"
+   }
+  },
+  "key2": {
+   "value": {
+    "value": "value2default"
+   }
+  },
+  "key4": {
+   "value": {
+    "value": "value4two"
+   }
+  },
+  "region": {
+   "value": {
+    "value": "xyz"
+   }
+  }
+ }
+}

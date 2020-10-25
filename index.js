@@ -97,12 +97,22 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 });
 
 async function puff(del, template, dir, n, data) {
-    let name = data.name || n;
-    var base = remove(data.default || data, ['environments', 'services', 'name']);
-    const environments = Environments(data.environments);
-    environments.forEach((value, envKey) => {
-        const done = deepmerge(base, value);
-        Io(del, FileName(dir, name, envKey), template, done);
+    const indicator = del ? '-' : '+';
+    const name = data.name || n;
+    const base = remove(data.default || data, ['environments', 'services', 'name']);
+    const environments = Environments(base, data.environments);
+    const services = data.services === undefined ? new Map([[name, environments]]) : Services(name, data.services);
+
+    services.forEach((sValue, sKey) => {
+        const merged = environments.has(sKey) ? deepmerge(environments[sKey], services[sKey]) : environments[sKey];
+        services.set(sKey, merged);
+    });
+
+    services.forEach((sValue, sKey) => {
+        environments.forEach((eValue, eKey) => {
+            const filename = FileName(dir, sKey, eKey);
+            Io(del, filename, template, eValue).then(() => { console.log(`${indicator}${path.basename(filename)}`) });
+        });
     });
 }
 
@@ -113,14 +123,33 @@ function remove(obj, keys) {
         if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
         target[i] = obj[i];
     }
+
     return target;
 }
 
-function Environments(environments) {
+function Services(name, services) {
+    const srvs = new Map();
+    Object.keys(services).forEach(service => {
+        const base = remove(services[service], ['environments']);
+        if (undefined !== services[service].environments) {
+            const environments = Environments(base, services[service].environments);
+            environments.forEach((value, envKey) => {
+                srvs.set(`${name}${service}`, new Map([[envKey, deepmerge(base, value)]]));
+            });
+        }
+        else {
+            srvs.set(`${name}${service}`, base);
+        }
+    });
+
+    return srvs;
+}
+
+function Environments(base, environments) {
     const envs = new Map();
     Object.keys(environments).forEach(env => {
         if (undefined !== environments[env].regions) {
-            const data = remove(environments[env], ['regions']);
+            const data = deepmerge(base, remove(environments[env], ['regions']));
             environments[env].regions.forEach(reg => {
                 const key = Object.keys(reg)[0];
                 envs.set(`${env}.${key}`, deepmerge(data, deepmerge({ region: key }, reg[key])));
@@ -128,7 +157,7 @@ function Environments(environments) {
         }
         else {
             const key = environments[env].region === undefined ? env : `${env}.${environments[env].region}`;
-            envs.set(key, environments[env]);
+            envs.set(key, deepmerge(base, environments[env]));
         }
     });
 

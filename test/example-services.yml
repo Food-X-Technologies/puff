@@ -10,7 +10,7 @@ environments:
   two:
     key4: value4two
     region: xyz
-  you:
+  three:
     appValue3:
       reference:
         secretName: thisismysecret
@@ -19,21 +19,25 @@ environments:
 services:
   me:
     environments:
+      two:
+        key4: meTwo
+        region: TwoMe
       one:
         key3: value99
         regions:
         - abc:
             key1: value1xyz
-      you:
-        environments:
-          two:
-            key4: you4boo
-            region: xyz
-      us:
-        environments:
-          three:
-            appValue3:
-              reference:
-                secretName: happy
-                keyVault:
-                  id: place
+  you:
+    key3: you3
+    environments:
+      two:
+        key4: you4boo
+        region: xyz
+  us:
+    environments:
+      three:
+        appValue3:
+          reference:
+            secretName: happy
+            keyVault:
+              id: place
