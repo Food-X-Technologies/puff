@@ -130,7 +130,7 @@ function Services (services)
         if (undefined !== services[service].environments) {
             const environments = Environments(services[service].environments);
             environments.forEach((value, envKey) => {
-                srvs.set(`${service}.${envKey}`, deepmerge(base, value));
+                srvs.set(service, new Map([[envKey, deepmerge(base, value)]]));
             });
         }
         else{
