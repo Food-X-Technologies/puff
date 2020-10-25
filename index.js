@@ -99,7 +99,7 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 async function puff(del, template, dir, n, data) {
     const indicator = del ? '-' : '+';
     const name = data.name || n;
-    const base = remove(data.default || data, ['environments', 'services', 'name']);
+    const base = remove(data.default || remove(data, ['name']), ['environments', 'services']);
     const environments = Environments(base, data.environments);
     const services = data.services === undefined ? new Map([[name, environments]]) : Services(name, data.services);
 
