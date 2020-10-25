@@ -3,6 +3,7 @@
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
+const { serialize } = require('v8');
 const yamljs = require('yamljs');
 const argv = require('yargs')
     .option('path', { alias: 'p', default: process.cwd(), description: 'Root path for finding yml files to generate from.' })
@@ -99,82 +100,29 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 async function puff(del, template, dir, n, data) {
     let name = data.name || n;
     const baseLayer = layer(data.default || data);
-    const baseEnvironments = Environments(baseLayer, data.environments);
+    const envLayer = Environments(baseLayer, data.environments);
 
-    //console.log(baseEnvironments);
-    const services = new Map([[name, baseEnvironments]]);
-    //services[name] = baseEnvironments;
-    // const services = (data.services === undefined) ?
-    //     new Map([[name, new Map([['environments', baseEnvironments]])]])
-    //     : Services(baseLayer, data.services);
-// console.log(services.size);
-     //console.log(services.toString ( ));
-     console.log(services);
-    services.forEach((value, key, map) => {
-        //console.log(value.toString ( ));
-        // console.log(`${key} = ${value}`);
-        // //return ;
-          //console.log(value);
-       //   console.log(value.size);
-        //console.log(key, value);
-        value.forEach((v, k, m) => {
-        console.log(`${k} = ${v}`);
-    }
-        );
-}
-    );
-    // for (const s of services.keys()) {
-    //     // console.log(sMap.toString ( ));
-    //      //console.log(sMap.size);
-    //      console.log(s);
+    const services = (data.services === undefined) ?
+        new Map([[name, new Map([[name, envLayer]])]])
+        : Services(envLayer, data.services);
 
-    //     for (const e of services[s].keys()) {
-    //         console.log(e);
+    services.forEach((service, serviceKey) => {
+        service.forEach((environment, environmentKey) => {
+            service.forEach((values, key) => {
+                const filename = FileName(dir, serviceKey, environmentKey, environment['region']);
+                Io(filename, template, values);
 
-    //         // console.log(s);
-    //         //console.log(eMap[e]);
-    //         //console.log(e, eMap);
-    //         //console.log(eMap.size);
-    //     //     for (const [x, xMap] of eMap.entries()) {
-    //     //         console.log('asdasd');
-    //     //     //     console.log(x, xMap);
-    //         //  const filename = FileName(dir, s, e, eMap['region']);
-    //         //  console.log(filename);
-    //         // Io(filename, template, finalLayer, filename);
-    //     // }
-    // }
-    // }
-    // Object.keys(services).forEach(service => {
-    // //services.keys.forEach(service => {
-    //     console.log('service:' + service);
-
-    //     for (env in services[service].environments) {
-    //         //Object.keys(serivces[service].environments).forEach(env => {
-    //         console.log('env:' + env);
-
-    //         const filename = FileName(dir, service, env, serivces[service][env].region);
-    //         Io(filename, template, finalLayer, filename).then(console.log('ji'));
-    //     }
-    //   });
-    // for (service in services) {
-    //     //Object.keys(services).forEach(service => {
-
-    // }
+            });
+        });
+    });
 }
 
-function Services(baseLayer, services) {
+function Services(envLayer, services) {
     const srvs = new Map();
 
-    for (service in services) {
-        srvs[service] = new Map();
-
-        const serviceLayer = merge(baseLayer, layer(services[service]));
-        const environments = Environments(serviceLayer, services[service].environments);
-
-        for (env in services[service].environments) {
-            srvs[service][env] = environments[env];
-        }
-    }
+    Object.keys(services).forEach(service => {
+        srvs.set(service, Environments(envLayer, services[service].environments));
+    });
 
     return srvs;
 }
@@ -188,18 +136,18 @@ function Environments(baseLayer, environments) {
         if (null != environments[env].region) {
             const finalLayer = envLayer;
             finalLayer.set('region', { value: environments[env].region });
-            envs[env] = finalLayer;
+            envs.set(env, finalLayer);
         }
         else if (null != environments[env].regions && 0 < environments[env].regions.length) {
             environments[env].regions.forEach(r => {
                 const region = Object.keys(r)[0];
                 const finalLayer = merge(envLayer, layer(r[region]));
                 finalLayer.set('region', { value: region });
-                envs[env] = finalLayer;
+                envs.set(env, finalLayer);
             });
         }
         else {
-            envs[env] = envLayer;
+            envs.set(env, envLayer);
         }
     });
 
@@ -207,11 +155,11 @@ function Environments(baseLayer, environments) {
 }
 
 function FileName(dir, name, env, region) {
-    const fn = (region === undefined) ? name + '.' + env : name + '.' + env + '.' + region;
+    const fn = (region === undefined) ? name + '.' + env : name + '.' + env + '.' + region.value;
     return path.join(dir, fn + '.json');
 }
 
-async function Io(filename, template, layer, filename) {
+async function Io(filename, template, layer) {
     if (del) return await Delete(filename)
     else return await Write(template, layer, filename);
 }
