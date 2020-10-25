@@ -169,28 +169,3 @@ function Fatten(obj) {
     Object.keys(obj).forEach(key => { if (obj[key].reference === undefined) obj[key] = { value: obj[key] }; });
     return obj;
 }
-
-function layer(data) {
-    const map = new Map();
-
-    if (null != data) {
-        const keys = Object.keys(data);
-        if (0 < keys.length) {
-            keys.forEach(element => {
-                if ('regions' !== element
-                    && 'environments' !== element
-                    && 'services' !== element) {
-                    const val = (data[element].reference) ? data[element] : { value: data[element] };
-
-                    map.set(element, val);
-                }
-            });
-        }
-    }
-
-    return map;
-}
-
-function merge(a, b) {
-    return new Map(function* () { yield* a; yield* b; }());
-}
