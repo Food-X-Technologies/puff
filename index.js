@@ -107,6 +107,12 @@ async function puff(del, template, dir, n, data) {
     // data.services.forEach(srvs => {
     //     console.log('srvs', srvs);
     // });
+
+    
+    environments.forEach((value, envKey) => {
+        const filename = FileName(dir, name, envKey);
+        Io(filename, template, environments);
+    });
 }
 
 function remove(obj, keys) {
@@ -148,11 +154,8 @@ function Services(envLayer, services) {
 }
 
 
-function FileName(dir, name, env, region) {
-    const fn = (region === undefined || region === null || region.value === '') ?
-        name + '.' + env :
-        name + '.' + env + '.' + region.value;
-    return path.join(dir, fn + '.json');
+function FileName(dir, name, env) {
+    return path.join(dir, `${name}.${env}.json`);
 }
 
 async function Io(del, filename, template, layer) {
