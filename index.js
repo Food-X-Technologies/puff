@@ -98,8 +98,11 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
 async function puff(del, template, dir, n, data) {
     let name = data.name || n;
-    var baseLayer = remove(data.default || data, ['environments', 'services', 'name']);
+    var base = remove(data.default || data, ['environments', 'services', 'name']);
     const environments = Environments(data.environments);
+    environments.forEach((value, key) => {
+        environments.set(key, deepmerge(base, value))
+    });
     console.log(environments);
     // data.services.forEach(srvs => {
     //     console.log('srvs', srvs);
@@ -123,7 +126,7 @@ function Environments(environments) {
             const data = remove(environments[env], ['regions']);
             environments[env].regions.forEach(reg => {
                 const key = Object.keys(reg)[0];
-                envs.set(key, deepmerge(data, reg[key]));
+                envs.set(`${env}.${key}`, deepmerge(data, deepmerge({region: key}, reg[key])));
             });
         }
         else {
