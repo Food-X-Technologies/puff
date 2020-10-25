@@ -101,36 +101,80 @@ async function puff(del, template, dir, n, data) {
     const baseLayer = layer(data.default || data);
     const baseEnvironments = Environments(baseLayer, data.environments);
 
-    const services = new Map([[name, new Map([['environments', baseEnvironments]])]]);
+    //console.log(baseEnvironments);
+    const services = new Map([[name, baseEnvironments]]);
+    //services[name] = baseEnvironments;
     // const services = (data.services === undefined) ?
     //     new Map([[name, new Map([['environments', baseEnvironments]])]])
     //     : Services(baseLayer, data.services);
+// console.log(services.size);
+     //console.log(services.toString ( ));
+     console.log(services);
+    services.forEach((value, key, map) => {
+        //console.log(value.toString ( ));
+        // console.log(`${key} = ${value}`);
+        // //return ;
+          //console.log(value);
+       //   console.log(value.size);
+        //console.log(key, value);
+        value.forEach((v, k, m) => {
+        console.log(`${k} = ${v}`);
+    }
+        );
+}
+    );
+    // for (const s of services.keys()) {
+    //     // console.log(sMap.toString ( ));
+    //      //console.log(sMap.size);
+    //      console.log(s);
 
-    Object.keys(services).forEach(service => {
-        console.log('service:' + service);
+    //     for (const e of services[s].keys()) {
+    //         console.log(e);
 
-        Object.keys(serivces[service].environments).forEach(env => {
-            console.log('env:' + serivces[service][env]);
+    //         // console.log(s);
+    //         //console.log(eMap[e]);
+    //         //console.log(e, eMap);
+    //         //console.log(eMap.size);
+    //     //     for (const [x, xMap] of eMap.entries()) {
+    //     //         console.log('asdasd');
+    //     //     //     console.log(x, xMap);
+    //         //  const filename = FileName(dir, s, e, eMap['region']);
+    //         //  console.log(filename);
+    //         // Io(filename, template, finalLayer, filename);
+    //     // }
+    // }
+    // }
+    // Object.keys(services).forEach(service => {
+    // //services.keys.forEach(service => {
+    //     console.log('service:' + service);
 
-            const filename = FileName(dir, service, env, serivces[service][env].region);
-            Io(filename, template, finalLayer, filename);
-        });
-    });
+    //     for (env in services[service].environments) {
+    //         //Object.keys(serivces[service].environments).forEach(env => {
+    //         console.log('env:' + env);
+
+    //         const filename = FileName(dir, service, env, serivces[service][env].region);
+    //         Io(filename, template, finalLayer, filename).then(console.log('ji'));
+    //     }
+    //   });
+    // for (service in services) {
+    //     //Object.keys(services).forEach(service => {
+
+    // }
 }
 
 function Services(baseLayer, services) {
     const srvs = new Map();
 
-    Object.keys(services).forEach(service => {
+    for (service in services) {
         srvs[service] = new Map();
 
         const serviceLayer = merge(baseLayer, layer(services[service]));
         const environments = Environments(serviceLayer, services[service].environments);
 
-        Object.keys(environments).forEach(env => {
+        for (env in services[service].environments) {
             srvs[service][env] = environments[env];
-        });
-    });
+        }
+    }
 
     return srvs;
 }
@@ -168,12 +212,12 @@ function FileName(dir, name, env, region) {
 }
 
 async function Io(filename, template, layer, filename) {
-    if (del) Delete(filename)
-    else Write(template, layer, filename);
+    if (del) return await Delete(filename)
+    else return await Write(template, layer, filename);
 }
 
 async function Delete(filename) {
-    fs.unlink(filename, function (err) {
+    return await fs.unlink(filename, function (err) {
         if (err) {
             if (err.code != 'ENOENT') return console.log(err);
         } else {
@@ -186,7 +230,7 @@ async function Write(template, final, filename) {
     const contents = template;
     contents.parameters = MapToObject(final);
 
-    fs.writeFile(filename
+    return await fs.writeFile(filename
         , JSON.stringify(contents, null, 1)
         , {
             flag: 'w+',
