@@ -25,7 +25,6 @@ services:
         - abc:
             key1: value1xyz
       you:
-        key2: value2default
         environments:
           two:
             key4: you4boo

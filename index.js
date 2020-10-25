@@ -109,9 +109,8 @@ async function puff(del, template, dir, n, data) {
     services.forEach((service, serviceKey) => {
         service.forEach((environment, environmentKey) => {
             environment.forEach((regions, regionKey) => {
-                // const region = values.has('region') ? values.get('region') : undefined;
                 console.log(regionKey);
-                const filename = FileName(dir, serviceKey, environmentKey, regionKey);
+                const filename = FileName(dir, environmentKey, regionKey, regions.region);
                 Io(filename, template, regions);
             });
         });
