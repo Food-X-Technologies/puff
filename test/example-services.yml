@@ -10,7 +10,7 @@ environments:
   two:
     key4: value4two
     region: xyz
-  you:
+  three:
     appValue3:
       reference:
         secretName: thisismysecret

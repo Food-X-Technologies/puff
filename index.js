@@ -100,14 +100,19 @@ async function puff(del, template, dir, n, data) {
     const indicator = del ? '-' : '+';
     const name = data.name || n;
     const base = remove(data.default || data, ['environments', 'services', 'name']);
-    const services = data.services === undefined ? new Map([[name, {}]]) : Services(data.services);
-    console.log(services);
-
     const environments = Environments(data.environments);
-    environments.forEach((value, envKey) => {
-        const done = deepmerge(base, value);
-        const filename = FileName(dir, name, envKey);
-        Io(del, filename, template, done).then(() => {console.log(`${indicator}${path.basename(filename)}`)});
+    const services = data.services === undefined ? new Map([[name, environments]]) : Services(name, data.services);
+
+    services.forEach((sValue, sKey) => {
+        const merged = environments.has(sKey) ? deepmerge(environments[sKey], services[sKey]) : environments[sKey];
+        services.set(sKey, merged);
+    });
+
+    services.forEach((sValue, sKey) => {
+        environments.forEach((eValue, eKey) => {
+            const filename = FileName(dir, sKey, eKey);
+            Io(del, filename, template, eValue).then(() => { console.log(`${indicator}${path.basename(filename)}`) });
+        });
     });
 }
 
@@ -122,19 +127,18 @@ function remove(obj, keys) {
     return target;
 }
 
-function Services (services)
-{
+function Services(name, services) {
     const srvs = new Map();
     Object.keys(services).forEach(service => {
         const base = remove(services[service], ['environments']);
         if (undefined !== services[service].environments) {
             const environments = Environments(services[service].environments);
             environments.forEach((value, envKey) => {
-                srvs.set(service, new Map([[envKey, deepmerge(base, value)]]));
+                srvs.set(`${name}${service}`, new Map([[envKey, deepmerge(base, value)]]));
             });
         }
-        else{
-            srvs.set(service, base);
+        else {
+            srvs.set(`${name}${service}`, base);
         }
     });
 
