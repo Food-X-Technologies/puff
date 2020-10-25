@@ -127,7 +127,8 @@ function Environments(environments) {
             });
         }
         else {
-            envs.set(env, environments[env]);
+            const key = environments[env].region === undefined ? env : `${env}.${environments[env].region}`;
+            envs.set(key, environments[env]);
         }
     });
 
