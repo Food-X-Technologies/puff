@@ -8,6 +8,8 @@ environments:
     regions:
     - abc:
         key1: value1abc
+    - zzz:
+        key1: value1zzz
   two:
     key4: value4two
     region: xyz

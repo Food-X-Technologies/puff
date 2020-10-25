@@ -10,13 +10,30 @@ environments:
   two:
     key4: value4two
     region: xyz
-  three:
+  you:
     appValue3:
       reference:
         secretName: thisismysecret
         keyVault:
           id: thisismyid
 services:
-  - me
-  - you
-  - us
+  me:
+    environments:
+      one:
+        key3: value99
+        regions:
+        - abc:
+            key1: value1xyz
+      you:
+        environments:
+          two:
+            key4: you4boo
+            region: xyz
+      us:
+        environments:
+          three:
+            appValue3:
+              reference:
+                secretName: happy
+                keyVault:
+                  id: place

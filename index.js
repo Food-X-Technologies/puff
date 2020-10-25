@@ -3,6 +3,7 @@
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
+const deepmerge = require('deepmerge');
 const yamljs = require('yamljs');
 const argv = require('yargs')
     .option('path', { alias: 'p', default: process.cwd(), description: 'Root path for finding yml files to generate from.' })
@@ -84,7 +85,6 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
             const dir = path.dirname(yml);
             const d = yamljs.load(yml);
-
             let name = path.parse(yml).name;
             console.log('processing', name);
             puff(del, template, dir, name, d);
@@ -98,70 +98,63 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 
 async function puff(del, template, dir, n, data) {
     let name = data.name || n;
-    const defaultLayer = layer(data.default || data);
-
-    if (undefined !== data.services) {
-        name = data.services.puffprefix || name;
-            console.log("prefix: ", name);
-        Object.keys(data.services).forEach(service => {
-            console.log(service);
-        });
-    }
-
-    Object.keys(data.environments).forEach(env => {
-        const envLayer = merge(defaultLayer, layer(data.environments[env]));
-
-        if (null != data.environments[env].region) {
-            const region = data.environments[env].region;
-            const finalLayer = envLayer;
-            finalLayer.set('region', { value: region });
-
-            const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
-            Io(filename, template, finalLayer, filename);
-        }
-        else if (null != data.environments[env].regions && 0 < data.environments[env].regions.length) {
-            data.environments[env].regions.forEach(r => {
-                const region = Object.keys(r)[0];
-                const finalLayer = merge(envLayer, layer(r[region]));
-                finalLayer.set('region', { value: region });
-
-                const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
-                Io(filename, template, finalLayer, filename);
-            });
-        }
-        else if (envLayer.has('region')) {
-            const region = envLayer.get('region').value;
-            const filename = path.join(dir, name + '.' + env + '.' + region + '.json');
-            Io(filename, template, envLayer, filename);
-        }
-        else {
-            const filename = path.join(dir, name + '.' + env + '.json');
-            Io(filename, template, envLayer, filename);
-        }
+    var base = remove(data.default || data, ['environments', 'services', 'name']);
+    const environments = Environments(data.environments);
+    environments.forEach((value, envKey) => {
+        const done = deepmerge(base, value);
+        Io(del, FileName(dir, name, envKey), template, done);
     });
 }
 
-async function Io(filename, template, layer, filename)
-{
-    if (del) Delete(filename)
-    else Write(template, layer, filename);
+function remove(obj, keys) {
+    var target = {};
+    for (var i in obj) {
+        if (keys.indexOf(i) >= 0) continue;
+        if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+        target[i] = obj[i];
+    }
+    return target;
+}
+
+function Environments(environments) {
+    const envs = new Map();
+    Object.keys(environments).forEach(env => {
+        if (undefined !== environments[env].regions) {
+            const data = remove(environments[env], ['regions']);
+            environments[env].regions.forEach(reg => {
+                const key = Object.keys(reg)[0];
+                envs.set(`${env}.${key}`, deepmerge(data, deepmerge({ region: key }, reg[key])));
+            });
+        }
+        else {
+            const key = environments[env].region === undefined ? env : `${env}.${environments[env].region}`;
+            envs.set(key, environments[env]);
+        }
+    });
+
+    return envs;
+}
+
+function FileName(dir, name, env) {
+    return path.join(dir, `${name}.${env}.json`);
+}
+
+async function Io(del, filename, template, layer) {
+    if (del) return await Delete(filename)
+    else return await Write(template, layer, filename);
 }
 
 async function Delete(filename) {
-    fs.unlink(filename, function (err) {
-        if (err) {
-            if (err.code != 'ENOENT') return console.log(err);
-        } else {
-            console.log('-', path.basename(filename));
-        }
+    return await fs.unlink(filename, function (err) {
+        if (err && err.code != 'ENOENT') return console.log(err);
     });
 }
 
 async function Write(template, final, filename) {
     const contents = template;
-    contents.parameters = MapToObject(final);
+    contents.parameters = Fatten(final);
 
-    fs.writeFile(filename
+    return await fs.writeFile(filename
         , JSON.stringify(contents, null, 1)
         , {
             flag: 'w+',
@@ -169,50 +162,11 @@ async function Write(template, final, filename) {
         }
         , function (err, data) {
             if (err) console.log(err);
-            else {
-                console.log('+', path.basename(filename));
-            }
         }
     );
 }
 
-function MapToObject(m) {
-    function selfIterator(map) {
-        return Array.from(map).reduce((acc, [key, value]) => {
-            if (value instanceof Map) {
-                acc[key] = selfIterator(value);
-            } else {
-                acc[key] = value;
-            }
-
-            return acc;
-        }, {})
-    }
-
-    return selfIterator(m);
-}
-
-function layer(data) {
-    const map = new Map();
-
-    if (null != data) {
-        const keys = Object.keys(data);
-        if (0 < keys.length) {
-            keys.forEach(element => {
-                if ('regions' !== element
-                    && 'environments' !== element
-                    && 'services' !== element
-                    && 'puffprefix' !== element) {
-                    const val = (data[element].reference) ? data[element] : { value: data[element] };
-
-                    map.set(element, val);
-                }
-            });
-        }
-    }
-    return map;
-}
-
-function merge(a, b) {
-    return new Map(function* () { yield* a; yield* b; }());
+function Fatten(obj) {
+    Object.keys(obj).forEach(key => { if (obj[key].reference === undefined) obj[key] = { value: obj[key] }; });
+    return obj;
 }
