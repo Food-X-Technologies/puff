@@ -97,15 +97,16 @@ glob(rootDir + '/**/*.yml', {}, (err, files) => {
 });
 
 async function puff(del, template, dir, n, data) {
-    let name = data.name || n;
-    var base = remove(data.default || data, ['environments', 'services', 'name']);
+    const indicator = del ? '-' : '+';
+    const name = data.name || n;
+    const base = remove(data.default || data, ['environments', 'services', 'name']);
     const environments = Environments(data.environments);
     environments.forEach((value, envKey) => {
         const done = deepmerge(base, value);
-        Io(del, FileName(dir, name, envKey), template, done);
+        const filename = FileName(dir, name, envKey);
+        Io(del, filename, template, done).then(() => {console.log(`${indicator}${path.basename(filename)}`)});
     });
 }
-
 function remove(obj, keys) {
     var target = {};
     for (var i in obj) {
