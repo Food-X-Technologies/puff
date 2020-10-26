@@ -124,13 +124,20 @@ function MergeEnvs(base, envs) {
             const merge = base.has(eKey) ? deepmerge(base.get(eKey), eValue) : eValue;
             merged.set(eKey, merge);
         });
+
+        base.forEach((eValue, eKey) => {
+            if (!merged.has(eKey)) {
+                merged.set(eKey, eValue);
+            }
+        });
     }
-    
-    base.forEach((eValue, eKey) => {
-        if (!merged.has(eKey)) {
-            merged.set(eKey, eValue);
-        }
-    });
+    else {
+        base.forEach((eValue, eKey) => {
+            if (!merged.has(eKey)) {
+                merged.set(eKey, deepmerge(eValue, envs));
+            }
+        });
+    }
 
     return merged;
 }
