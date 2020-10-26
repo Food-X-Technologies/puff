@@ -171,7 +171,7 @@ function Environments(base, environments) {
             const data = deepmerge(base, remove(environments[env], ['regions']));
             environments[env].regions.forEach(reg => {
                 const key = Object.keys(reg)[0];
-                envs.set(`${env}.${key}`, deepmerge(data, deepmerge({ region: key }, reg[key])));
+                envs.set(`${env}.${key}`, deepmerge(data, { region: key }));
             });
         }
         else {
