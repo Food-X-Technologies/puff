@@ -105,6 +105,7 @@ async function puff(del, template, dir, n, data) {
 
     const output = new Map();
     services.forEach((sValue, sKey) => {
+
         output.set(sKey, MergeEnvs(environments, sValue));
     });
 
@@ -118,14 +119,15 @@ async function puff(del, template, dir, n, data) {
 
 function MergeEnvs(base, envs) {
     const merged = new Map();
-    envs.forEach((eValue, eKey) => {
-        const merge = base.has(eKey) ? deepmerge(base.get(eKey), eValue) : eValue;
-        merged.set(eKey, merge);
-    });
-
+    if (Map.prototype.toString.call(envs) === '[object Map]') {
+        envs.forEach((eValue, eKey) => {
+            const merge = base.has(eKey) ? deepmerge(base.get(eKey), eValue) : eValue;
+            merged.set(eKey, merge);
+        });
+    }
+    
     base.forEach((eValue, eKey) => {
-        if (!merged.has(eKey))
-        {
+        if (!merged.has(eKey)) {
             merged.set(eKey, eValue);
         }
     });
@@ -172,7 +174,7 @@ function Environments(base, environments) {
             environments[env].regions.forEach(reg => {
                 const key = Object.keys(reg)[0];
                 let store = deepmerge(data, { region: key });
-                if (reg[key])store = deepmerge(store, reg[key]);
+                if (reg[key]) store = deepmerge(store, reg[key]);
                 envs.set(`${env}.${key}`, store);
             });
         }
