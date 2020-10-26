@@ -177,7 +177,7 @@ function Environments(base, environments) {
             });
         }
         else {
-            const key = environments[env].region === undefined ? env : `${env}.${environments[env].region}`;
+            const key = environments[env].region ? `${env}.${environments[env].region}` : (base.region ? `${env}.${base.region}` : env);
             envs.set(key, deepmerge(base, environments[env]));
         }
     });
