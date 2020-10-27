@@ -101,7 +101,7 @@ async function puff(del, template, dir, n, data) {
     const name = data.name || n;
     const base = remove(data.default || remove(data, ['name']), ['environments', 'services']);
     const environments = Environments(base, data.environments);
-    const services = data.services === undefined ? new Map([[name, environments]]) : Services(name, data.services);
+    const services = data.services === undefined ? new Map([[name, environments]]) : Services(name, base, data.services);
 
     const output = new Map();
     services.forEach((sValue, sKey) => {
@@ -153,20 +153,20 @@ function remove(obj, keys) {
     return target;
 }
 
-function Services(name, services) {
+function Services(name, base, services) {
     const srvs = new Map();
     Object.keys(services).forEach(service => {
-        const base = remove(services[service], ['environments']);
+        const sBase = deepmerge(base, remove(services[service], ['environments']));
         if (undefined !== services[service].environments) {
-            const environments = Environments(base, services[service].environments);
+            const environments = Environments(sBase, services[service].environments);
             const envMap = new Map();
             environments.forEach((value, envKey) => {
-                envMap.set(envKey, deepmerge(base, value));
+                envMap.set(envKey, deepmerge(sBase, value));
             });
             srvs.set(`${name}${service}`, envMap);
         }
         else {
-            srvs.set(`${name}${service}`, base);
+            srvs.set(`${name}${service}`, sBase);
         }
     });
 
