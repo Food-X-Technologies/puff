@@ -1,9 +1,9 @@
 # Introduction 
-Convert yaml into Azure ARM parameters templates (json).
+Convert yaml into Azure ARM parameters templates (json). Checkout out our [examples](https://github.com/Food-X-Technologies/puff-example).
 
 ## Node
 ```
-node ./index.js -t ./template.json
+node ./index.js
 ```
 
 ## NPM
@@ -24,9 +24,9 @@ $ npm run puffin
 ```
 
 # Examples
-## Input (yaml)
+## [Input (yaml)]()
 ```
-name: example
+name: ex-
 default:
     key1: value1default
     key2: value2default
@@ -39,10 +39,15 @@ environments:
   two:
     key4: value4two
     region: xyz
+services:
+  service1:
+    regions:
+    - abc:
+      key2: value2xyz
 ```
 
 ## Outputs (json)
-### 1. example.one.abc.json
+### 1. [ex-service1.one.abc.json]()
 ```
 {
  "parameters": {
@@ -61,7 +66,7 @@ environments:
  }
 }
 ```
-### 2. example.two.xyz.json
+### 2. [ex-service1.two.xyz.json]()
 ```
 {
  "parameters": {
