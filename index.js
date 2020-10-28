@@ -134,7 +134,7 @@ function MergeEnvs(base, envs) {
     else {
         base.forEach((eValue, eKey) => {
             if (!merged.has(eKey)) {
-                merged.set(eKey, deepmerge(eValue, envs));
+                merged.set(eKey, deepmerge(envs, eValue));
             }
         });
     }
