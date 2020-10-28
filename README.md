@@ -24,7 +24,7 @@ $ npm run puffin
 ```
 
 # Examples
-## [Input (yaml)]()
+## [Input (yaml)](https://github.com/Food-X-Technologies/puff-example/blob/main/example-simple/example.yml)
 ```
 name: ex-
 default:
@@ -47,7 +47,7 @@ services:
 ```
 
 ## Outputs (json)
-### 1. [ex-service1.one.abc.json]()
+### 1. [ex-service1.one.abc.json](https://github.com/Food-X-Technologies/puff-example/blob/main/example-simple/ex-service1.one.abc.json)
 ```
 {
  "parameters": {
@@ -66,7 +66,7 @@ services:
  }
 }
 ```
-### 2. [ex-service1.two.xyz.json]()
+### 2. [ex-service1.two.xyz.json](https://github.com/Food-X-Technologies/puff-example/blob/main/example-simple/ex-service1.two.xyz.json)
 ```
 {
  "parameters": {
