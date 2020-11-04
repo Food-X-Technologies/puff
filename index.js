@@ -105,7 +105,6 @@ async function puff(del, template, dir, n, data) {
 
     const output = new Map();
     services.forEach((sValue, sKey) => {
-
         output.set(sKey, MergeEnvs(environments, sValue));
     });
 
