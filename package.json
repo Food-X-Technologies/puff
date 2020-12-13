@@ -1,6 +1,6 @@
 {
   "name": "@foodx/puff",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "license": "MIT",
   "author": {
     "name": "Jef King",
@@ -28,6 +28,6 @@
     "i": "^0.3.6",
     "path": "^0.12.7",
     "yamljs": "^0.3.0",
-    "yargs": "^16.1.0"
+    "yargs": "^16.2.0"
   }
 }
