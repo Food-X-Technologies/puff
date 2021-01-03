@@ -1,5 +1,5 @@
 # Introduction 
-Convert yaml into Azure ARM parameters templates (json). Checkout our [examples](https://github.com/Food-X-Technologies/puff-example).
+Convert yaml into Azure ARM parameters templates (json). Checkout the [examples](https://github.com/Food-X-Technologies/puff-example).
 
 ## Node
 ```
