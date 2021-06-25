@@ -23,6 +23,24 @@ $ npm run puff
 $ npm run puffin
 ```
 
+## .puffignore
+A file named .puffignore on the execution folder can provide a list of patterns to be ignored.
+
+```
+# ignore all files inside the ignore folder (including nested folders)
+ignore/**/*
+
+# ignore all files that matches the pattern (including nested folders)
+**/*-old
+
+# ignore specic file
+folder/file.yml
+```
+
+Comments must always start at the beggining of the line `ignore.yml # won't work` 
+
+Negative pattern are not allowed `!(ignore/**/dont-ignore.yml)` won't create an exeption to a previous ignore rule like .gitignore does.
+
 # Examples
 ## [Input (yaml)](https://github.com/Food-X-Technologies/puff-example/blob/main/example-simple/example.yml)
 ## Outputs (json)

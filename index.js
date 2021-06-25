@@ -70,6 +70,17 @@ else {
     console.log('generating files...');
 }
 
+const ignore = ['**/node_modules/**/*'];
+try {
+    const puffIgnore = fs.readFileSync(path.join(process.cwd(), '.puffignore'), { encoding: 'utf8' })
+    lines = puffIgnore.match(/[^\r\n]+/g); 
+    ignore.push(...lines.map(x => {
+        const trimmed = x.trim();
+        if(trimmed.startsWith("#") || !trimmed) return undefined;
+        return trimmed;
+    }).filter(x => x));
+} catch(e) {}
+
 const rootDir = argv.p;
 const template = {
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
@@ -77,20 +88,15 @@ const template = {
     "parameters": {}
 };
 
-glob(rootDir + '/**/*.yml', {}, (err, files) => {
+glob('**/*.yml', { ignore, cwd: rootDir }, (err, files) => {
     let count = 0;
     for (var i = 0; i < files.length; i++) {
         const yml = files[i];
-        if (!yml.includes('node_modules') && !yml.includes('azure-pipelines')) {
-
-            const dir = path.dirname(yml);
-            const d = yamljs.load(yml);
-            let name = path.parse(yml).name;
-            console.log('processing', name);
-            puff(del, template, dir, name, d);
-
-            count++;
-        }
+        const dir = path.dirname(yml);
+        const d = yamljs.load(yml);
+        let name = path.parse(yml).name;
+        puff(del, template, dir, name, d);
+        count++;
     }
 
     console.log('processed:', count);
