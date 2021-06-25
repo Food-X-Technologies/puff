@@ -75,11 +75,8 @@ const ignore = ['**/node_modules/**/*'];
 const filepath = path.join(process.cwd(), '.puffignore');
 let exist;
 
-try { 
-    exist = !!fs.statSync(filepath);
- } catch (e) { exist = false }
 
-if(exist) {
+if(fs.existsSync(filepath)) {
     const puffIgnore = fs.readFileSync(filepath, { encoding: 'utf8' })
     lines = puffIgnore.match(/[^\r\n]+/g); 
     ignore.push(...lines.map(x => {
