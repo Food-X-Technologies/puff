@@ -5,6 +5,7 @@ const glob = require('glob');
 const path = require('path');
 const deepmerge = require('deepmerge');
 const yamljs = require('yamljs');
+const { promisify } = require('util');
 const argv = require('yargs')
     .option('path', { alias: 'p', default: process.cwd(), description: 'Root path for finding yml files to generate from.' })
     .option('delete', { alias: 'd', type: 'boolean', description: 'Delete files that were generated.' })
@@ -71,15 +72,22 @@ else {
 }
 
 const ignore = ['**/node_modules/**/*'];
-try {
-    const puffIgnore = fs.readFileSync(path.join(process.cwd(), '.puffignore'), { encoding: 'utf8' })
+const filepath = path.join(process.cwd(), '.puffignore');
+let exist;
+
+try { 
+    exist = !!fs.statSync(filepath);
+ } catch (e) { exist = false }
+
+if(exist) {
+    const puffIgnore = fs.readFileSync(filepath, { encoding: 'utf8' })
     lines = puffIgnore.match(/[^\r\n]+/g); 
     ignore.push(...lines.map(x => {
         const trimmed = x.trim();
         if(trimmed.startsWith("#") || !trimmed) return undefined;
         return trimmed;
     }).filter(x => x));
-} catch(e) {}
+}
 
 const rootDir = argv.p;
 const template = {
