@@ -3,6 +3,9 @@ on: push
 
 jobs:
   publish:
+    env:
+      # default dryrun publish to NPM
+      ENABLE_DRYRUN: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -12,13 +15,16 @@ jobs:
       - run: npm install
       - run: npm test
 
-      # only publish after a PR to main branch
+      # real publish after a PR to main branch
+      - if: ${{ startsWith(github.ref, 'refs/heads/main') }}
+        run: echo "::set-env name=ENABLE_DRYRUN::false"
+
       - id: publish
-        if: ${{ startsWith(github.ref, 'refs/heads/main') }}
         uses: JS-DevTools/npm-publish@v1
         with:
+          dry-run: ${{ env.ENABLE_DRYRUN }}
           token: ${{ secrets.NPM_TOKEN }}
 
-      - if: ${{ startsWith(github.ref, 'refs/heads/main') && (steps.publish.outputs.type != 'none') }}
+      - if: steps.publish.outputs.type != 'none'
         run: |
           echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
