@@ -55,17 +55,17 @@ if (del) {
 }
 else {
     const jelly = `
-                                    ▒▒▒▒▒▒▒▒▒▒                                      
-                                  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒                                    
-                                ▒▒▒▒██▒▒▒▒▒▒██▒▒▒▒                                  
-                                ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒                                  
-                                ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒                                  
-                                  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒                                    
-                                  ▒▒  ▒▒  ▒▒  ▒▒                                    
-                                ▒▒▒▒  ▒▒  ▒▒  ▒▒                                    
-                                ▒▒  ▒▒  ▒▒  ▒▒  ▒▒                                  
-                                ▒▒  ▒▒  ▒▒  ▒▒  ▒▒                                  
-                                  ▒▒  ▒▒▒▒▒▒  ▒▒                                    
+                                    ▒▒▒▒▒▒▒▒▒▒
+                                  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+                                ▒▒▒▒██▒▒▒▒▒▒██▒▒▒▒
+                                ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+                                ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+                                  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+                                  ▒▒  ▒▒  ▒▒  ▒▒
+                                ▒▒▒▒  ▒▒  ▒▒  ▒▒
+                                ▒▒  ▒▒  ▒▒  ▒▒  ▒▒
+                                ▒▒  ▒▒  ▒▒  ▒▒  ▒▒
+                                  ▒▒  ▒▒▒▒▒▒  ▒▒
                                   ▒▒  ▒▒  ▒▒  ▒▒`
     console.log(jelly);
     console.log('generating files...');
@@ -78,7 +78,7 @@ let exist;
 
 if(fs.existsSync(filepath)) {
     const puffIgnore = fs.readFileSync(filepath, { encoding: 'utf8' })
-    lines = puffIgnore.match(/[^\r\n]+/g); 
+    lines = puffIgnore.match(/[^\r\n]+/g);
     ignore.push(...lines.map(x => {
         const trimmed = x.trim();
         if(trimmed.startsWith("#") || !trimmed) return undefined;
@@ -100,14 +100,17 @@ glob('**/*.yml', { ignore, cwd: rootDir }, (err, files) => {
         const dir = path.dirname(yml);
         const d = yamljs.load(yml);
         let name = path.parse(yml).name;
-        puff(del, template, dir, name, d);
+        puff(del, yml, template, dir, name, d);
         count++;
     }
 
     console.log('processed:', count);
 });
 
-async function puff(del, template, dir, n, data) {
+async function puff(del, file, template, dir, n, data) {
+    if(!data.environments){
+        console.log('WARNING: ', file, 'has no environments, it should be ignored.')
+    }
     const indicator = del ? '-' : '+';
     const name = data.name || n;
     const base = remove(data.default || remove(data, ['name']), ['environments', 'services']);
